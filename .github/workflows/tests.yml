@@ -1,0 +1,30 @@
+name: Tests
+on: [push, pull_request]
+
+defaults:
+  run:
+    shell: bash
+
+jobs:
+  standard_tests:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Install dependencies
+        run: sudo apt update &&
+             sudo apt install -y
+                 gfortran
+                 make
+                 libnetcdf-dev
+                 libnetcdff-dev
+                 netcdf-bin
+                 python3
+
+      - name: System information
+        run: |
+          cat /etc/*release
+          gfortran --version
+          nf-config --all
+      - uses: actions/checkout@v2
+
+      - name: Build neasy-f
+        run: ./scripts/ci_build_and_run.sh
