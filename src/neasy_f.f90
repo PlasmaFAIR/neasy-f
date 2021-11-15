@@ -2,6 +2,9 @@ module neasyf
   use netcdf, only : NF90_INT
   implicit none
 
+  private
+  public :: neasyf_open, neasyf_close, neasyf_dim, neasyf_write, neasyf_error
+
   integer, parameter :: nf_kind = kind(NF90_INT)
 
   interface netcdf_type
