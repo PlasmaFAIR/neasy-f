@@ -1,3 +1,6 @@
+!> This example was adapted from the netCDF-Fortran examples
+!> `simple_xy_nc4_wr.f90` and `simple_xy_nc4_rd.f90`, and demonstates the use of
+!> neasy-f to write some data and read it back in.
 program simple_xy_wr
   use neasyf
   implicit none
@@ -11,8 +14,6 @@ program simple_xy_wr
   integer :: data_out(NY, NX), data_in(NY, NX)
   integer :: x, y
 
-  ! Create some pretend data. If this wasn't an example program, we
-  ! would have some real data to write, for example, model output.
   do x = 1, NX
      do y = 1, NY
         data_out(y, x) = (x - 1) * NY + (y - 1)
@@ -21,8 +22,8 @@ program simple_xy_wr
 
   ncid = neasyf_open(FILE_NAME, "w")
 
-  call neasyf_dim(ncid, "x", [(x, x=1, NX)], x_dimid)
-  call neasyf_dim(ncid, "y", [(x, x=1, NY)], y_dimid)
+  call neasyf_dim(ncid, "x", dim_size=NX, dimid=x_dimid)
+  call neasyf_dim(ncid, "y", dim_size=NY, dimid=y_dimid)
 
   call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
        units="Pa", description="Synthetic pressure")
@@ -32,8 +33,8 @@ program simple_xy_wr
   print *, '*** SUCCESS writing example file ', FILE_NAME, '!'
 
   ncid = neasyf_open(FILE_NAME, "r")
-
   call neasyf_read(ncid, VAR_NAME, data_in)
+  call neasyf_close(ncid)
 
   ! Check the data.
   do x = 1, NX
@@ -44,9 +45,6 @@ program simple_xy_wr
         end if
      end do
   end do
-
-  ! Close the file, freeing all resources.
-  call neasyf_close(ncid)
 
   print *,"*** SUCCESS reading example file ", FILE_NAME, "! "
 
