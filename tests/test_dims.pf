@@ -1,5 +1,6 @@
 module test_dims
   use funit
+  use netcdf
   implicit none
 
   character(len=1024) :: temp_file
@@ -32,7 +33,6 @@ contains
   @test
   subroutine test_create_dims_values
     use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
-    use netcdf
     integer :: dim_id, length, var_id
     integer :: dim_id2, var_id2
     real, dimension(3), parameter :: expected_coords = [1.1, 2.2, 3.3]
@@ -61,7 +61,6 @@ contains
   @test
   subroutine test_create_dims_size
     use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
-    use netcdf
     integer :: dim_id, length, var_id
     real, dimension(*), parameter :: expected_coords = [1, 2, 3, 4, 5]
     real, dimension(size(expected_coords)) :: actual_coords
@@ -85,7 +84,6 @@ contains
   @test
   subroutine test_create_unlimited_dims
     use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
-    use netcdf
     integer :: dim1_id, dim1_var_id, dim2_id, length, num_dims, unlim_dim
 
     call neasyf_dim(file_id, "dim1", [1, 2, 3], dimid=dim1_id, unlimited=.true., varid=dim1_var_id)
@@ -112,7 +110,6 @@ contains
   @test
   subroutine test_create_dims_attributes
     use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
-    use netcdf
     integer :: dim_id, length
     character(len=nf90_max_name) :: unit_value, desc_value
 
