@@ -64,9 +64,18 @@ module neasyf
 
 contains
 
+  !> Open a file, possibly creating it if it doesn't exist
   function neasyf_open(filename, action) result(ncid)
     use netcdf, only : nf90_open, nf90_create, NF90_NOWRITE, NF90_NETCDF4, NF90_CLOBBER, NF90_WRITE
+    !> Name of the file on disk
     character(len=*), intent(in) :: filename
+    !> How to open the file. One of:
+    !>
+    !> - "r": read-only, file must already exist
+    !> - "w": write-only, overwriting any existing file
+    !> - "rw": read-write, appending an existing file
+    !>
+    !> @todo Handle 'rw' for files that may or may not already exist
     character(len=*), intent(in) :: action
     integer(nf_kind) :: ncid
     integer :: status
@@ -84,12 +93,14 @@ contains
     call neasyf_error(status)
   end function neasyf_open
 
+  !> Close an open file
   subroutine neasyf_close(ncid)
     use netcdf, only : nf90_close
     integer, intent(in) :: ncid
     call neasyf_error(nf90_close(ncid), ncid)
   end subroutine neasyf_close
 
+  !> Return the corresponding netCDF type for [[variable]]
   function neasyf_type_scalar(variable) result(nf_type)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : NF90_BYTE, NF90_CHAR, NF90_SHORT, NF90_INT, NF90_REAL, NF90_DOUBLE
