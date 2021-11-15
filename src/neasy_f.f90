@@ -472,15 +472,12 @@ contains
     end if
   end subroutine neasyf_write_rank2
 
-  subroutine neasyf_read_scalar(parent_id, var_name, var_id, values)
+  subroutine neasyf_read_scalar(parent_id, var_name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
-
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
-    !> Name of the variable. Either [[var_name]] or [[var_id]] must be supplied
-    character(len=*), optional, intent(in) :: var_name
-    !> NetCDF ID of the variable. Either [[var_name]] or [[var_id]] must be supplied
-    integer, optional, intent(in) :: var_id
+    !> Name of the variable
+    character(len=*), intent(in) :: var_name
     !> Storage for the variable
     class(*), intent(out) :: values
 
@@ -488,40 +485,20 @@ contains
     integer(nf_kind) :: file_var_id
     character(len=nf90_max_name) :: file_var_name
 
-    if (present(var_name)) then
-      status = nf90_inq_varid(parent_id, var_name, file_var_id)
-      call neasyf_error(status, ncid=parent_id)
-      if (present(var_id)) then
-        if (file_var_id /= var_id) then
-          error stop "Supplied netCDF ID doesn't match value in file"
-        end if
-      end if
+    status = nf90_inq_varid(parent_id, var_name, file_var_id)
+    call neasyf_error(status, ncid=parent_id)
 
-      file_var_name = var_name
-    end if
+    status = polymorphic_get_var(parent_id, file_var_id, values)
 
-    if (present(var_id)) then
-      file_var_id = var_id
-
-      if (.not. present(var_name)) then
-        status = nf90_inquire_variable(parent_id, file_var_id, file_var_name)
-      end if
-    end if
-
-    status = polymorphic_get_var(parent_id, var_id, values)
-
-    call neasyf_error(status, parent_id, varid=file_var_id, var=file_var_name)
+    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
   end subroutine neasyf_read_scalar
 
-  subroutine neasyf_read_rank1(parent_id, var_name, var_id, values)
+  subroutine neasyf_read_rank1(parent_id, var_name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
-
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
-    !> Name of the variable. Either [[var_name]] or [[var_id]] must be supplied
-    character(len=*), optional, intent(in) :: var_name
-    !> NetCDF ID of the variable. Either [[var_name]] or [[var_id]] must be supplied
-    integer, optional, intent(in) :: var_id
+    !> Name of the variable
+    character(len=*), intent(in) :: var_name
     !> Storage for the variable
     class(*), dimension(:), intent(out) :: values
 
@@ -529,34 +506,16 @@ contains
     integer(nf_kind) :: file_var_id
     character(len=nf90_max_name) :: file_var_name
 
-    if (present(var_name)) then
-      status = nf90_inq_varid(parent_id, var_name, file_var_id)
-      call neasyf_error(status, ncid=parent_id)
-      if (present(var_id)) then
-        if (file_var_id /= var_id) then
-          error stop "Supplied netCDF ID doesn't match value in file"
-        end if
-      end if
+    status = nf90_inq_varid(parent_id, var_name, file_var_id)
+    call neasyf_error(status, ncid=parent_id)
 
-      file_var_name = var_name
-    end if
+    status = polymorphic_get_var(parent_id, file_var_id, values)
 
-    if (present(var_id)) then
-      file_var_id = var_id
-
-      if (.not. present(var_name)) then
-        status = nf90_inquire_variable(parent_id, file_var_id, file_var_name)
-      end if
-    end if
-
-    status = polymorphic_get_var(parent_id, var_id, values)
-
-    call neasyf_error(status, parent_id, varid=file_var_id, var=file_var_name)
+    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
   end subroutine neasyf_read_rank1
 
   subroutine neasyf_read_rank2(parent_id, var_name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
-
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
