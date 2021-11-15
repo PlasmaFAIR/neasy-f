@@ -273,7 +273,8 @@ contains
     call neasyf_error(status, parent_id, var=name, varid=var_id)
   end subroutine write_any_netcdf_scalar
 
-  subroutine write_any_netcdf_rank1(name, parent_id, value_, dim_ids, units, description)
+  subroutine write_any_netcdf_rank1(parent_id, name, value_, dim_ids, &
+       units, description, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -281,13 +282,14 @@ contains
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), intent(in), dimension(:) :: value_
+    class(*), dimension(:), intent(in) :: value_
     !> Array of dimension IDs
-    integer, intent(in), dimension(:) :: dim_ids
+    integer, dimension(1), intent(in) :: dim_ids
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long description of coordinate
     character(len=*), optional, intent(in) :: description
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
     integer :: status
@@ -316,7 +318,7 @@ contains
                         message="(define_and_write_integer)")
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, value_)
+    status = polymorphic_put_var(parent_id, var_id, value_, start, count, stride, map)
 
     if (status /= NF90_NOERR) then
       call neasyf_error(status, parent_id, var=name, varid=var_id, &
