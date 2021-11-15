@@ -1,22 +1,50 @@
-module netfy
+module neasyf
+  use netcdf, only : NF90_INT
   implicit none
+
+  integer, parameter :: nf_kind = kind(NF90_INT)
 
   interface netcdf_type
     module procedure netcdf_type_scalar
     module procedure netcdf_type_rank1
   end interface netcdf_type
 
-  interface netfy_write
+  interface neasyf_write
     module procedure write_any_netcdf_scalar
     module procedure write_any_netcdf_rank1
-  end interface netfy_write
-  
+  end interface neasyf_write
+
+  interface polymorphic_put_var
+    module procedure polymorphic_put_var_scalar
+    module procedure polymorphic_put_var_rank1
+  end interface polymorphic_put_var
+
 contains
+
+  function neasyf_open(filename, action) result(ncid)
+    use netcdf, only : nf90_open, nf90_create, NF90_NOWRITE, NF90_NETCDF4, NF90_CLOBBER, NF90_WRITE
+    character(len=*), intent(in) :: filename
+    character(len=*), intent(in) :: action
+    integer(nf_kind) :: ncid
+    integer :: status
+
+    select case (action)
+    case ('r')
+      status = nf90_open(filename, NF90_NOWRITE, ncid)
+    case ('rw')
+      status = nf90_open(filename, ior(NF90_WRITE, NF90_NETCDF4), ncid)
+    case ('w')
+      status = nf90_create(filename, ior(NF90_CLOBBER, NF90_NETCDF4), ncid)
+    case default
+      error stop 'neasyf: Unsupported action ' // action
+    end select
+    call netcdf_error(status)
+  end function neasyf_open
 
   function netcdf_type_scalar(variable) result(nf_type)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : NF90_BYTE, NF90_CHAR, NF90_SHORT, NF90_INT, NF90_REAL, NF90_DOUBLE
-    integer(kind(NF90_BYTE)) :: nf_type
+    integer(nf_kind) :: nf_type
     class(*), intent(in) :: variable
 
     select type (variable)
@@ -36,25 +64,79 @@ contains
       nf_type = -1
     end select
   end function netcdf_type_scalar
-  
+
   function netcdf_type_rank1(variable) result(nf_type)
-    use netcdf, only : NF90_BYTE
-    integer(kind(NF90_BYTE)) :: nf_type
+    integer(nf_kind) :: nf_type
     class(*), dimension(:), intent(in) :: variable
     nf_type = netcdf_type(variable(1))
   end function netcdf_type_rank1
 
-  subroutine write_any_netcdf_scalar(name, parent_id, value_)
+  function polymorphic_put_var_scalar(ncid, varid, values, start) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, NF90_NOERR, NF90_ENOTVAR, NF90_INT
+    use netcdf, only : nf90_put_var, NF90_EBADTYPE
+    integer, intent(in) :: ncid, varid
+    class(*), intent(in) :: values
+    integer, dimension(:), optional, intent(in) :: start
+    integer :: status
+    select type (values)
+    type is (integer(int8))
+      status = nf90_put_var(ncid, varid, values, start)
+    type is (integer(int16))
+      status = nf90_put_var(ncid, varid, values, start)
+    type is (integer(int32))
+      status = nf90_put_var(ncid, varid, values, start)
+    type is (real(real32))
+      status = nf90_put_var(ncid, varid, values, start)
+    type is (real(real64))
+      status = nf90_put_var(ncid, varid, values, start)
+    type is (character(len=*))
+      status = nf90_put_var(ncid, varid, values, start)
+    class default
+      status = NF90_EBADTYPE
+    end select
+  end function polymorphic_put_var_scalar
+
+  function polymorphic_put_var_rank1(ncid, varid, values, start, count, stride, map) result(status)
+    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_put_var, NF90_EBADTYPE
+    integer, intent( in) :: ncid, varid
+    class(*), dimension(:), intent(in) :: values
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer(nf_kind) :: status
+    select type (values)
+    type is (integer(int8))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (integer(int16))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (integer(int32))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (real(real32))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (real(real64))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (character(len=*))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    class default
+      status = NF90_EBADTYPE
+    end select
+  end function polymorphic_put_var_rank1
+
+  subroutine write_any_netcdf_scalar(name, parent_id, value_, units, description)
+    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
     class(*), intent(in) :: value_
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long description of coordinate
+    character(len=*), optional, intent(in) :: description
 
-    integer(kind(NF90_INT)) :: nf_type
+    integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
 
@@ -64,36 +146,28 @@ contains
       nf_type = netcdf_type(value_)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, var_id)
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call netcdf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+      call netcdf_error(status, var=name, varid=var_id)
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call netcdf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(description)) then
+        status = nf90_put_att(parent_id, var_id, "description", description)
+        call netcdf_error(status, var=name, varid=var_id, att="description")
+      end if
+    else
+      call netcdf_error(status, var=name, varid=var_id)
     end if
 
-    select type (value_)
-    type is (integer(int8))
-      status = nf90_put_var(parent_id, var_id, value_)
-    type is (integer(int16))
-      status = nf90_put_var(parent_id, var_id, value_)
-    type is (integer(int32))
-      status = nf90_put_var(parent_id, var_id, value_)
-    type is (real(real32))
-      status = nf90_put_var(parent_id, var_id, value_)
-    type is (real(real64))
-      status = nf90_put_var(parent_id, var_id, value_)
-    type is (character(len=*))
-      status = nf90_put_var(parent_id, var_id, value_)
-    end select
-
-    if (status /= NF90_NOERR) then
-      call netcdf_error(status, parent_id, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
-    end if
+    status = polymorphic_put_var(parent_id, var_id, value_)
+    call netcdf_error(status, parent_id, var=name, varid=var_id)
   end subroutine write_any_netcdf_scalar
 
-  subroutine write_any_netcdf_rank1(name, parent_id, value_, dim_ids)
-    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, NF90_NOERR, NF90_ENOTVAR, NF90_INT
+  subroutine write_any_netcdf_rank1(name, parent_id, value_, dim_ids, units, description)
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -102,8 +176,12 @@ contains
     class(*), intent(in), dimension(:) :: value_
     !> Array of dimension IDs
     integer, intent(in), dimension(:) :: dim_ids
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long description of coordinate
+    character(len=*), optional, intent(in) :: description
 
-    integer(kind(NF90_INT)) :: nf_type
+    integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
 
@@ -113,6 +191,16 @@ contains
       nf_type = netcdf_type(value_)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, dim_ids, var_id)
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call netcdf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(description)) then
+        status = nf90_put_att(parent_id, var_id, "description", description)
+        call netcdf_error(status, var=name, varid=var_id, att="description")
+      end if
     end if
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
@@ -120,15 +208,17 @@ contains
                         message="(define_and_write_integer)")
     end if
 
-    status = nf90_put_var(parent_id, var_id, value_)
+    status = polymorphic_put_var(parent_id, var_id, value_)
+
     if (status /= NF90_NOERR) then
       call netcdf_error(status, parent_id, var=name, varid=var_id, &
                         message="(define_and_write_integer)")
     end if
   end subroutine write_any_netcdf_rank1
 
-  subroutine write_dim(name, parent_id, value_, units, unlimited)
-    use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, NF90_NOERR, NF90_ENOTVAR, NF90_UNLIMITED, NF90_INT
+  subroutine write_dim(name, parent_id, value_, units, description, unlimited)
+    use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_ENOTVAR, NF90_UNLIMITED
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -137,12 +227,14 @@ contains
     class(*), intent(in), dimension(:) :: value_
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
+    !> Long description of coordinate
+    character(len=*), optional, intent(in) :: description
     !> Is this dimension unlimited?
     logical, optional, intent(in) :: unlimited
 
-    integer(kind(NF90_INT)) :: nf_type
+    integer(nf_kind) :: nf_type
     integer :: status
-    integer(kind(NF90_INT)) :: dim_id, var_id
+    integer(nf_kind) :: dim_id, var_id
     logical :: unlimited_local
     integer :: dim_size
 
@@ -165,11 +257,10 @@ contains
       else
         dim_size = size(value_)
       end if
-      
+
       status = nf90_def_dim(parent_id, name, dim_size, dim_id)
       if (status /= NF90_NOERR) then
-        call netcdf_error(status, dim=name, dimid=dim_id, &
-                          message="(define_and_write_integer)")
+        call netcdf_error(status, dim=name, dimid=dim_id)
       end if
 
       nf_type = netcdf_type(value_)
@@ -179,13 +270,20 @@ contains
         call netcdf_error(status, var=name, varid=var_id, &
                           message="(define_and_write_integer)")
       end if
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call netcdf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(description)) then
+        status = nf90_put_att(parent_id, var_id, "description", description)
+        call netcdf_error(status, var=name, varid=var_id, att="description")
+      end if
     end if
 
-    status = nf90_put_var(parent_id, dim_id, value_)
-    if (status /= NF90_NOERR) then
-      call netcdf_error(status, parent_id, var=name, varid=dim_id, &
-                        message="(define_and_write_integer)")
-    end if
+    status = polymorphic_put_var(parent_id, var_id, value_)
+    call netcdf_error(status, parent_id, var=name, varid=dim_id)
   end subroutine write_dim
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`
@@ -216,6 +314,8 @@ contains
     character (*), intent (in), optional :: message
     integer :: ist
     character (20) :: varname, dimname
+
+    if (istatus == NF90_NOERR) return
 
     write (error_unit, '(2a)', advance='no') 'ERROR: ', trim (nf90_strerror (istatus))
 
@@ -277,4 +377,4 @@ contains
 
     error stop "Aborted by netcdf_error"
   end subroutine netcdf_error
-end module write_any
+end module neasyf
