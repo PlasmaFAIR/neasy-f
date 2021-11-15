@@ -31,8 +31,8 @@ but using neasy-f:
 ```fortran
   ncid = neasyf_open("my_file.nc", "w")
 
-  call neasyf_dim(ncid, "x", [(x, x=1, NX)], x_dimid)
-  call neasyf_dim(ncid, "y", [(x, x=1, NY)], y_dimid)
+  call neasyf_dim(ncid, "x", dim_size=NX, x_dimid)
+  call neasyf_dim(ncid, "y", dim_size=NY, y_dimid)
 
   call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
        units="Pa", description="Synthetic pressure")
