@@ -44,6 +44,12 @@ contains
     call neasyf_error(status)
   end function neasyf_open
 
+  subroutine neasyf_close(ncid)
+    use netcdf, only : nf90_close
+    integer, intent(in) :: ncid
+    call neasyf_error(nf90_close(ncid), ncid)
+  end subroutine neasyf_close
+
   function netcdf_type_scalar(variable) result(nf_type)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : NF90_BYTE, NF90_CHAR, NF90_SHORT, NF90_INT, NF90_REAL, NF90_DOUBLE
