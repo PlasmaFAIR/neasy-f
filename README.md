@@ -72,3 +72,28 @@ You can build neasy-f into a library using CMake:
 $ cmake . -B build
 $ cmake --build build
 ```
+
+Implementation
+--------------
+
+To simplify a lot of the code, neasy-f uses unlimited polymorphism (`class(*)`)
+for a few dummy/input variables. This means that instead of needing to write
+separate implementations for `integer, real, character`, and their different
+`kind`s, _as well as_ handling scalar and array arguments, we only need to
+overload on the array rank. This possibly has a slight runtime overhead, as
+we've shifted from compile-time dispatch to runtime, but this is should be small
+compared to reading from/writing to disk.
+
+NetCDF supports up to 7 dimensions. Most of neasy-f's implementation is agnostic
+to the dimension, with some slight differences between the scalar and
+n-dimensional overloads. The result is that there is a _lot_ of repeated code in
+neasy-f. To handle this, there is a short Python script to generate the 1-7D
+overloads of the neasy-f functions.
+
+The various `*.in.f90` files hold the "real" implementations, and
+`src/generate_source.py` generates the code and spits it out. To update the main
+code, run:
+
+```
+$ ./generate_source.py > neasy_f.f90
+```
