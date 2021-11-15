@@ -38,7 +38,7 @@ contains
     case default
       error stop 'neasyf: Unsupported action ' // action
     end select
-    call netcdf_error(status)
+    call neasyf_error(status)
   end function neasyf_open
 
   function netcdf_type_scalar(variable) result(nf_type)
@@ -146,23 +146,23 @@ contains
       nf_type = netcdf_type(value_)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, var_id)
-      call netcdf_error(status, var=name, varid=var_id)
+      call neasyf_error(status, var=name, varid=var_id)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
-        call netcdf_error(status, var=name, varid=var_id, att="units")
+        call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
       if (present(description)) then
         status = nf90_put_att(parent_id, var_id, "description", description)
-        call netcdf_error(status, var=name, varid=var_id, att="description")
+        call neasyf_error(status, var=name, varid=var_id, att="description")
       end if
     else
-      call netcdf_error(status, var=name, varid=var_id)
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
     status = polymorphic_put_var(parent_id, var_id, value_)
-    call netcdf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id)
   end subroutine write_any_netcdf_scalar
 
   subroutine write_any_netcdf_rank1(name, parent_id, value_, dim_ids, units, description)
@@ -194,24 +194,24 @@ contains
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
-        call netcdf_error(status, var=name, varid=var_id, att="units")
+        call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
       if (present(description)) then
         status = nf90_put_att(parent_id, var_id, "description", description)
-        call netcdf_error(status, var=name, varid=var_id, att="description")
+        call neasyf_error(status, var=name, varid=var_id, att="description")
       end if
     end if
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
-      call netcdf_error(status, var=name, varid=var_id, &
+      call neasyf_error(status, var=name, varid=var_id, &
                         message="(define_and_write_integer)")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, value_)
 
     if (status /= NF90_NOERR) then
-      call netcdf_error(status, parent_id, var=name, varid=var_id, &
+      call neasyf_error(status, parent_id, var=name, varid=var_id, &
                         message="(define_and_write_integer)")
     end if
   end subroutine write_any_netcdf_rank1
@@ -273,12 +273,12 @@ contains
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
-        call netcdf_error(status, var=name, varid=var_id, att="units")
+        call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
       if (present(description)) then
         status = nf90_put_att(parent_id, var_id, "description", description)
-        call netcdf_error(status, var=name, varid=var_id, att="description")
+        call neasyf_error(status, var=name, varid=var_id, att="description")
       end if
     end if
 
@@ -290,7 +290,7 @@ contains
   !>
   !> All the arguments except `istatus` are optional and are used to give more
   !> detailed information about the error
-  subroutine netcdf_error(istatus, ncid, varid, dimid, file, dim, var, att, message)
+  subroutine neasyf_error(istatus, ncid, varid, dimid, file, dim, var, att, message)
     use, intrinsic :: iso_fortran_env, only : error_unit
     use netcdf, only: NF90_GLOBAL, nf90_strerror, nf90_inquire_variable, nf90_inquire_dimension, NF90_NOERR
     implicit none
@@ -376,5 +376,5 @@ contains
     write(error_unit,*)
 
     error stop "Aborted by netcdf_error"
-  end subroutine netcdf_error
+  end subroutine neasyf_error
 end module neasyf
