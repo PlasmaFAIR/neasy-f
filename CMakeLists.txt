@@ -86,6 +86,8 @@ if (NEASYF_BUILD_TESTS)
   set(NEASYF_CTEST_CASES)
   neasyf_add_standard_tests(TEST_NAMES
     dims
+    write
+    read
     )
   add_custom_target(check
     COMMAND ctest --output-on-failure

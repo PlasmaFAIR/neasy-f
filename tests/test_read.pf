@@ -1,0 +1,71 @@
+module test_read
+  use funit
+  use netcdf
+  use neasyf
+  implicit none
+
+  character(len=1024) :: temp_file
+  integer :: file_id
+
+contains
+  @before
+  subroutine setup
+    character(len=1024) :: temp_dir
+    integer :: length, status
+
+    call get_environment_variable("TMP", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) call get_environment_variable("TEMP", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) call get_environment_variable("TMPDIR", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) temp_dir = "/tmp"
+
+    temp_file = trim(temp_dir) // "/test.nc"
+
+    file_id = neasyf_open(temp_file, "w")
+  end subroutine setup
+  
+  @after
+  subroutine teardown
+    integer :: unit
+    open(newunit=unit, file=temp_file)
+    close(unit, status="delete")
+  end subroutine teardown
+
+  @test
+  subroutine test_read_1d
+    integer, parameter :: NX = 5
+    real, dimension(NX), parameter :: data_out = [55.5, 44.4, 33.3, 22.2, 11.1]
+    real, dimension(NX) :: data_in
+    integer :: x_dim_id, var_id
+
+    call neasyf_dim(file_id, "x", dim_size=NX, dimid=x_dim_id)
+    call neasyf_write(file_id, "data", data_out, [x_dim_id])
+    call neasyf_close(file_id)
+
+    file_id = neasyf_open(temp_file, "r")
+    call neasyf_read(file_id, "data", data_in)
+    call neasyf_close(file_id)
+
+    @assertEqual(data_in, data_out)
+  end subroutine test_read_1d
+  
+  @test
+  subroutine test_read_2d
+    integer, parameter :: nx = 5, ny = 3
+    integer :: i
+    real, dimension(nx, ny), parameter :: data_out = reshape([(i, i=1, nx*ny)], shape(data_out))
+    real, dimension(nx, ny) :: data_in
+    integer :: x_dim_id, y_dim_id, var_id
+
+    call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
+    call neasyf_dim(file_id, "y", dim_size=ny, dimid=y_dim_id)
+    call neasyf_write(file_id, "data", data_out, [x_dim_id, y_dim_id])
+    call neasyf_close(file_id)
+
+    file_id = neasyf_open(temp_file, "r")
+    call neasyf_read(file_id, "data", data_in)
+    call neasyf_close(file_id)
+
+    @assertEqual(data_in, data_out)
+  end subroutine test_read_2d
+
+end module test_read
