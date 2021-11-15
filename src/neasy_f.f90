@@ -7,16 +7,19 @@ module neasyf
   interface netcdf_type
     module procedure netcdf_type_scalar
     module procedure netcdf_type_rank1
+    module procedure netcdf_type_rank2
   end interface netcdf_type
 
   interface neasyf_write
     module procedure write_any_netcdf_scalar
     module procedure write_any_netcdf_rank1
+    module procedure write_any_netcdf_rank2
   end interface neasyf_write
 
   interface polymorphic_put_var
     module procedure polymorphic_put_var_scalar
     module procedure polymorphic_put_var_rank1
+    module procedure polymorphic_put_var_rank2
   end interface polymorphic_put_var
 
 contains
@@ -71,6 +74,12 @@ contains
     nf_type = netcdf_type(variable(1))
   end function netcdf_type_rank1
 
+  function netcdf_type_rank2(variable) result(nf_type)
+    integer(nf_kind) :: nf_type
+    class(*), dimension(:, :), intent(in) :: variable
+    nf_type = netcdf_type(variable(1, 1))
+  end function netcdf_type_rank2
+
   function polymorphic_put_var_scalar(ncid, varid, values, start) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -120,6 +129,31 @@ contains
       status = NF90_EBADTYPE
     end select
   end function polymorphic_put_var_rank1
+
+  function polymorphic_put_var_rank2(ncid, varid, values, start, count, stride, map) result(status)
+    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_put_var, NF90_EBADTYPE
+    integer, intent(in) :: ncid, varid
+    class(*), dimension(:, :), intent(in) :: values
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer(nf_kind) :: status
+    select type (values)
+    type is (integer(int8))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (integer(int16))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (integer(int32))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (real(real32))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (real(real64))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    type is (character(len=*))
+      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
+    class default
+      status = NF90_EBADTYPE
+    end select
+  end function polymorphic_put_var_rank2
 
   subroutine neasyf_dim(parent_id, name, value_, dimid, units, description, unlimited)
     use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
@@ -289,6 +323,59 @@ contains
                         message="(define_and_write_integer)")
     end if
   end subroutine write_any_netcdf_rank1
+
+  subroutine write_any_netcdf_rank2(parent_id, name, value_, dim_ids, &
+       units, description, start, count, stride, map)
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_ENOTVAR
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    class(*), dimension(:, :), intent(in) :: value_
+    !> Array of dimension IDs
+    integer, dimension(2), intent(in) :: dim_ids
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long description of coordinate
+    character(len=*), optional, intent(in) :: description
+    integer, dimension(2), optional, intent(in) :: start, count, stride, map
+
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      nf_type = netcdf_type(value_)
+      ! TODO: check if nf_type indicates a derived type
+      status = nf90_def_var(parent_id, name, nf_type, dim_ids, var_id)
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(description)) then
+        status = nf90_put_att(parent_id, var_id, "description", description)
+        call neasyf_error(status, var=name, varid=var_id, att="description")
+      end if
+    end if
+    ! Something went wrong with one of the previous two calls
+    if (status /= NF90_NOERR) then
+      call neasyf_error(status, var=name, varid=var_id, &
+                        message="(define_and_write_integer)")
+    end if
+
+    status = polymorphic_put_var(parent_id, var_id, value_, start, count, stride, map)
+
+    if (status /= NF90_NOERR) then
+      call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                        message="(define_and_write_integer)")
+    end if
+  end subroutine write_any_netcdf_rank2
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`
   !>
