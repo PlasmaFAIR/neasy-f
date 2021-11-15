@@ -121,7 +121,81 @@ contains
     end select
   end function polymorphic_put_var_rank1
 
-  subroutine write_any_netcdf_scalar(name, parent_id, value_, units, description)
+  subroutine neasyf_dim(parent_id, name, value_, dimid, units, description, unlimited)
+    use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_ENOTVAR, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    class(*), dimension(:), intent(in) :: value_
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long description of coordinate
+    character(len=*), optional, intent(in) :: description
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: dim_size
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! Dimension doesn't exist, so let's create it
+    dim_size = size(value_)
+    if (present(unlimited)) then
+      if (unlimited) then
+        dim_size = NF90_UNLIMITED
+      end if
+    end if
+
+    status = nf90_def_dim(parent_id, name, dim_size, dim_id)
+    if (status /= NF90_NOERR) then
+      call neasyf_error(status, dim=name, dimid=dim_id)
+    end if
+
+    nf_type = netcdf_type(value_)
+    ! TODO: check if nf_type indicates a derived type
+    status = nf90_def_var(parent_id, name, nf_type, dim_id, var_id)
+    if (status /= NF90_NOERR) then
+      call neasyf_error(status, var=name, varid=var_id, &
+           message="(define_and_write_integer)")
+    end if
+
+    if (present(units)) then
+      status = nf90_put_att(parent_id, var_id, "units", units)
+      call neasyf_error(status, var=name, varid=var_id, att="units")
+    end if
+
+    if (present(description)) then
+      status = nf90_put_att(parent_id, var_id, "description", description)
+      call neasyf_error(status, var=name, varid=var_id, att="description")
+    end if
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    status = polymorphic_put_var(parent_id, var_id, value_)
+    call neasyf_error(status, parent_id, var=name, varid=dim_id)
+  end subroutine neasyf_dim
+
+  subroutine write_any_netcdf_scalar(parent_id, name, value_, units, description)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
@@ -215,76 +289,6 @@ contains
                         message="(define_and_write_integer)")
     end if
   end subroutine write_any_netcdf_rank1
-
-  subroutine write_dim(name, parent_id, value_, units, description, unlimited)
-    use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
-         NF90_NOERR, NF90_ENOTVAR, NF90_UNLIMITED
-    !> Name of the variable
-    character(len=*), intent(in) :: name
-    !> NetCDF ID of the parent group/file
-    integer, intent(in) :: parent_id
-    !> Value of the integer to write
-    class(*), intent(in), dimension(:) :: value_
-    !> Units of coordinate
-    character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
-    !> Is this dimension unlimited?
-    logical, optional, intent(in) :: unlimited
-
-    integer(nf_kind) :: nf_type
-    integer :: status
-    integer(nf_kind) :: dim_id, var_id
-    logical :: unlimited_local
-    integer :: dim_size
-
-    status = nf90_inq_dimid(parent_id, name, dim_id)
-    if (status == NF90_NOERR) return
-    if (status /= NF90_ENOTVAR) then
-      call netcdf_error(status, dim=name, dimid=dim_id, &
-                        message="(define_and_write_integer)")
-    end if
-
-    ! Dimension doesn't exist, so let's create it
-    if (status == NF90_ENOTVAR) then
-      unlimited_local = .false.
-      if (present(unlimited)) then
-        unlimited_local = unlimited
-      end if
-
-      if (unlimited_local) then
-        dim_size = NF90_UNLIMITED
-      else
-        dim_size = size(value_)
-      end if
-
-      status = nf90_def_dim(parent_id, name, dim_size, dim_id)
-      if (status /= NF90_NOERR) then
-        call netcdf_error(status, dim=name, dimid=dim_id)
-      end if
-
-      nf_type = netcdf_type(value_)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, dim_id, var_id)
-      if (status /= NF90_NOERR) then
-        call netcdf_error(status, var=name, varid=var_id, &
-                          message="(define_and_write_integer)")
-      end if
-
-      if (present(units)) then
-        status = nf90_put_att(parent_id, var_id, "units", units)
-        call neasyf_error(status, var=name, varid=var_id, att="units")
-      end if
-
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
-      end if
-    end if
-
-    status = polymorphic_put_var(parent_id, var_id, value_)
-    call netcdf_error(status, parent_id, var=name, varid=dim_id)
-  end subroutine write_dim
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`
   !>
