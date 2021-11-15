@@ -11,9 +11,9 @@ module neasyf
   end interface netcdf_type
 
   interface neasyf_write
-    module procedure write_any_netcdf_scalar
-    module procedure write_any_netcdf_rank1
-    module procedure write_any_netcdf_rank2
+    module procedure neasyf_write_scalar
+    module procedure neasyf_write_rank1
+    module procedure neasyf_write_rank2
   end interface neasyf_write
 
   interface polymorphic_put_var
@@ -235,7 +235,7 @@ contains
     call neasyf_error(status, parent_id, var=name, varid=dim_id)
   end subroutine neasyf_dim
 
-  subroutine write_any_netcdf_scalar(parent_id, name, value_, units, description)
+  subroutine neasyf_write_scalar(parent_id, name, value_, units, description)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
@@ -277,9 +277,9 @@ contains
 
     status = polymorphic_put_var(parent_id, var_id, value_)
     call neasyf_error(status, parent_id, var=name, varid=var_id)
-  end subroutine write_any_netcdf_scalar
+  end subroutine neasyf_write_scalar
 
-  subroutine write_any_netcdf_rank1(parent_id, name, value_, dim_ids, &
+  subroutine neasyf_write_rank1(parent_id, name, value_, dim_ids, &
        units, description, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
@@ -330,9 +330,9 @@ contains
       call neasyf_error(status, parent_id, var=name, varid=var_id, &
                         message="(define_and_write_integer)")
     end if
-  end subroutine write_any_netcdf_rank1
+  end subroutine neasyf_write_rank1
 
-  subroutine write_any_netcdf_rank2(parent_id, name, value_, dim_ids, &
+  subroutine neasyf_write_rank2(parent_id, name, value_, dim_ids, &
        units, description, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
@@ -383,7 +383,7 @@ contains
       call neasyf_error(status, parent_id, var=name, varid=var_id, &
                         message="(define_and_write_integer)")
     end if
-  end subroutine write_any_netcdf_rank2
+  end subroutine neasyf_write_rank2
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`
   !>
