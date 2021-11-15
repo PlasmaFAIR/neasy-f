@@ -248,17 +248,33 @@ contains
     end select
   end function polymorphic_get_var_rank2
 
-  subroutine neasyf_dim(parent_id, name, value_, dimid, units, description, unlimited)
-    use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with [[values]], or the integers in the range `1..dim_size`. The
+  !> optional argument [[unlimited]] can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through [[dimid]] and [[varid]] respectively.
+  subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, description, unlimited)
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_EBADDIM, NF90_ENOTVAR, NF90_UNLIMITED
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
-    !> Value of the integer to write
-    class(*), dimension(:), intent(in) :: value_
+    !> Coordinate values
+    class(*), dimension(:), optional, intent(in) :: values
+    !> Size of the dimension if values isn't specified
+    integer, optional, intent(in) :: dim_size
     !> NetCDF ID of the dimension
     integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long description of coordinate
@@ -269,13 +285,25 @@ contains
     integer(nf_kind) :: nf_type
     integer :: status
     integer(nf_kind) :: dim_id, var_id
-    integer :: dim_size
+    integer :: i
+    integer :: local_size
+    integer, dimension(:), allocatable :: local_values
+
+    if (present(values) .and. present(dim_size)) then
+      error stop "Both 'values' and 'dim_size' given in 'neasyf_dim'. Only one must be present"
+    end if
 
     status = nf90_inq_dimid(parent_id, name, dim_id)
     if (status == NF90_NOERR) then
       if (present(dimid)) then
         dimid = dim_id
       end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id))
+        varid = var_id
+      end if
+
       return
     end if
 
@@ -284,25 +312,29 @@ contains
     end if
 
     ! Dimension doesn't exist, so let's create it
-    dim_size = size(value_)
+    if (present(values)) then
+      local_size = size(values)
+      nf_type = netcdf_type(values)
+      ! TODO: check if nf_type indicates a derived type
+    else if (present(dim_size)) then
+      local_size = dim_size
+      local_values = [(i, i=1, dim_size)]
+      nf_type = netcdf_type(local_values)
+    else
+      error stop "Dimension does not exist and neither 'values' and 'dim_size' given in 'neasyf_dim'. Exactly one must be present"
+    end if
+
     if (present(unlimited)) then
       if (unlimited) then
-        dim_size = NF90_UNLIMITED
+        local_size = NF90_UNLIMITED
       end if
     end if
 
-    status = nf90_def_dim(parent_id, name, dim_size, dim_id)
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, dim=name, dimid=dim_id)
-    end if
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id)
 
-    nf_type = netcdf_type(value_)
-    ! TODO: check if nf_type indicates a derived type
     status = nf90_def_var(parent_id, name, nf_type, dim_id, var_id)
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-           message="(define_and_write_integer)")
-    end if
+    call neasyf_error(status, var=name, varid=var_id)
 
     if (present(units)) then
       status = nf90_put_att(parent_id, var_id, "units", units)
@@ -318,7 +350,15 @@ contains
       dimid = dim_id
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, value_)
+    if (present(varid)) then
+      varid = var_id
+    end if
+
+    if (present(values)) then
+      status = polymorphic_put_var(parent_id, var_id, values)
+    else
+      status = nf90_put_var(parent_id, var_id, local_values)
+    end if
     call neasyf_error(status, parent_id, var=name, varid=dim_id)
   end subroutine neasyf_dim
 
