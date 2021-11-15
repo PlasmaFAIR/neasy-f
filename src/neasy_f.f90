@@ -3,7 +3,7 @@ module neasyf
   implicit none
 
   private
-  public :: neasyf_open, neasyf_close, neasyf_dim, neasyf_write, neasyf_error
+  public :: neasyf_open, neasyf_close, neasyf_dim, neasyf_write, neasyf_read, neasyf_error
 
   integer, parameter :: nf_kind = kind(NF90_INT)
 
@@ -19,11 +19,23 @@ module neasyf
     module procedure neasyf_write_rank2
   end interface neasyf_write
 
+  interface neasyf_read
+    module procedure neasyf_read_scalar
+    module procedure neasyf_read_rank1
+    module procedure neasyf_read_rank2
+  end interface neasyf_read
+
   interface polymorphic_put_var
     module procedure polymorphic_put_var_scalar
     module procedure polymorphic_put_var_rank1
     module procedure polymorphic_put_var_rank2
   end interface polymorphic_put_var
+
+  interface polymorphic_get_var
+    module procedure polymorphic_get_var_scalar
+    module procedure polymorphic_get_var_rank1
+    module procedure polymorphic_get_var_rank2
+  end interface polymorphic_get_var
 
 contains
 
@@ -163,6 +175,78 @@ contains
       status = NF90_EBADTYPE
     end select
   end function polymorphic_put_var_rank2
+
+  function polymorphic_get_var_scalar(ncid, varid, values) result(status)
+    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_get_var, NF90_EBADTYPE
+    integer, intent(in) :: ncid, varid
+    class(*), intent(out) :: values
+    integer(nf_kind) :: status
+    select type (values)
+    type is (integer(int8))
+      status = nf90_get_var(ncid, varid, values)
+    type is (integer(int16))
+      status = nf90_get_var(ncid, varid, values)
+    type is (integer(int32))
+      status = nf90_get_var(ncid, varid, values)
+    type is (real(real32))
+      status = nf90_get_var(ncid, varid, values)
+    type is (real(real64))
+      status = nf90_get_var(ncid, varid, values)
+    type is (character(len=*))
+      status = nf90_get_var(ncid, varid, values)
+    class default
+      status = NF90_EBADTYPE
+    end select
+  end function polymorphic_get_var_scalar
+
+  function polymorphic_get_var_rank1(ncid, varid, values) result(status)
+    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_get_var, NF90_EBADTYPE
+    integer, intent(in) :: ncid, varid
+    class(*), dimension(:), intent(out) :: values
+    integer(nf_kind) :: status
+    select type (values)
+    type is (integer(int8))
+      status = nf90_get_var(ncid, varid, values)
+    type is (integer(int16))
+      status = nf90_get_var(ncid, varid, values)
+    type is (integer(int32))
+      status = nf90_get_var(ncid, varid, values)
+    type is (real(real32))
+      status = nf90_get_var(ncid, varid, values)
+    type is (real(real64))
+      status = nf90_get_var(ncid, varid, values)
+    type is (character(len=*))
+      status = nf90_get_var(ncid, varid, values)
+    class default
+      status = NF90_EBADTYPE
+    end select
+  end function polymorphic_get_var_rank1
+
+  function polymorphic_get_var_rank2(ncid, varid, values) result(status)
+    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_get_var, NF90_EBADTYPE
+    integer, intent(in) :: ncid, varid
+    class(*), dimension(:, :), intent(out) :: values
+    integer(nf_kind) :: status
+    select type (values)
+    type is (integer(int8))
+      status = nf90_get_var(ncid, varid, values)
+    type is (integer(int16))
+      status = nf90_get_var(ncid, varid, values)
+    type is (integer(int32))
+      status = nf90_get_var(ncid, varid, values)
+    type is (real(real32))
+      status = nf90_get_var(ncid, varid, values)
+    type is (real(real64))
+      status = nf90_get_var(ncid, varid, values)
+    type is (character(len=*))
+      status = nf90_get_var(ncid, varid, values)
+    class default
+      status = NF90_EBADTYPE
+    end select
+  end function polymorphic_get_var_rank2
 
   subroutine neasyf_dim(parent_id, name, value_, dimid, units, description, unlimited)
     use netcdf, only : nf90_inq_dimid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
@@ -387,6 +471,110 @@ contains
                         message="(define_and_write_integer)")
     end if
   end subroutine neasyf_write_rank2
+
+  subroutine neasyf_read_scalar(parent_id, var_name, var_id, values)
+    use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
+
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable. Either [[var_name]] or [[var_id]] must be supplied
+    character(len=*), optional, intent(in) :: var_name
+    !> NetCDF ID of the variable. Either [[var_name]] or [[var_id]] must be supplied
+    integer, optional, intent(in) :: var_id
+    !> Storage for the variable
+    class(*), intent(out) :: values
+
+    integer :: status
+    integer(nf_kind) :: file_var_id
+    character(len=nf90_max_name) :: file_var_name
+
+    if (present(var_name)) then
+      status = nf90_inq_varid(parent_id, var_name, file_var_id)
+      call neasyf_error(status, ncid=parent_id)
+      if (present(var_id)) then
+        if (file_var_id /= var_id) then
+          error stop "Supplied netCDF ID doesn't match value in file"
+        end if
+      end if
+
+      file_var_name = var_name
+    end if
+
+    if (present(var_id)) then
+      file_var_id = var_id
+
+      if (.not. present(var_name)) then
+        status = nf90_inquire_variable(parent_id, file_var_id, file_var_name)
+      end if
+    end if
+
+    status = polymorphic_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, varid=file_var_id, var=file_var_name)
+  end subroutine neasyf_read_scalar
+
+  subroutine neasyf_read_rank1(parent_id, var_name, var_id, values)
+    use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
+
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable. Either [[var_name]] or [[var_id]] must be supplied
+    character(len=*), optional, intent(in) :: var_name
+    !> NetCDF ID of the variable. Either [[var_name]] or [[var_id]] must be supplied
+    integer, optional, intent(in) :: var_id
+    !> Storage for the variable
+    class(*), dimension(:), intent(out) :: values
+
+    integer :: status
+    integer(nf_kind) :: file_var_id
+    character(len=nf90_max_name) :: file_var_name
+
+    if (present(var_name)) then
+      status = nf90_inq_varid(parent_id, var_name, file_var_id)
+      call neasyf_error(status, ncid=parent_id)
+      if (present(var_id)) then
+        if (file_var_id /= var_id) then
+          error stop "Supplied netCDF ID doesn't match value in file"
+        end if
+      end if
+
+      file_var_name = var_name
+    end if
+
+    if (present(var_id)) then
+      file_var_id = var_id
+
+      if (.not. present(var_name)) then
+        status = nf90_inquire_variable(parent_id, file_var_id, file_var_name)
+      end if
+    end if
+
+    status = polymorphic_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, varid=file_var_id, var=file_var_name)
+  end subroutine neasyf_read_rank1
+
+  subroutine neasyf_read_rank2(parent_id, var_name, values)
+    use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
+
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: var_name
+    !> Storage for the variable
+    class(*), dimension(:, :), intent(out) :: values
+
+    integer :: status
+    integer(nf_kind) :: file_var_id
+    character(len=nf90_max_name) :: file_var_name
+
+    status = nf90_inq_varid(parent_id, var_name, file_var_id)
+    call neasyf_error(status, ncid=parent_id)
+
+    status = polymorphic_get_var(parent_id, file_var_id, values)
+
+    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+  end subroutine neasyf_read_rank2
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`
   !>
