@@ -26,23 +26,23 @@ endfunction()
 # Adds target for pfunit tests in test_source
 # name utils_tests_${test_name} and adds to
 # list of know tests cases to give to ctest.
-function(gk_add_test test_source test_name)
-  add_pfunit_test(utils_tests_${test_name}
+function(neasyf_add_test test_source test_name)
+  add_pfunit_test(neasyf_tests_${test_name}
     "${test_source}" "" "")
-  target_link_libraries(utils_tests_${test_name} gkutils)
-  list(APPEND GK_CTEST_CASES utils_tests_${test_name})
-  set(GK_CTEST_CASES ${GK_CTEST_CASES} PARENT_SCOPE)
+  target_link_libraries(neasyf_tests_${test_name} neasyf::neasyf)
+  list(APPEND NEASYF_CTEST_CASES neasyf_tests_${test_name})
+  set(NEASYF_CTEST_CASES ${NEASYF_CTEST_CASES} PARENT_SCOPE)
 endfunction()
 
 # Helper function to easily add multiple separate
 # tests provided they exist at tests/test_${name}.pf
-# and we're happy to identify them as utils_tests_${name}
-function(gk_add_standard_tests)
+# and we're happy to identify them as neasyf_tests_${name}
+function(neasyf_add_standard_tests)
   cmake_parse_arguments(
-        GK_ADD "" "" "TEST_NAMES" ${ARGN}
+        NEASYF_ADD "" "" "TEST_NAMES" ${ARGN}
     )
-  foreach(name ${GK_ADD_TEST_NAMES})
-    gk_add_test("tests/test_${name}.pf" ${name})
+  foreach(name ${NEASYF_ADD_TEST_NAMES})
+    neasyf_add_test("tests/test_${name}.pf" ${name})
   endforeach()
-  set(GK_CTEST_CASES ${GK_CTEST_CASES} PARENT_SCOPE)
+  set(NEASYF_CTEST_CASES ${NEASYF_CTEST_CASES} PARENT_SCOPE)
 endfunction()

@@ -14,6 +14,8 @@ string(COMPARE EQUAL
 )
 
 option(NEASYF_BUILD_EXAMPLES "Build the neasy-f examples" ${PROJECT_IS_TOP_LEVEL})
+option(NEASYF_BUILD_TESTS "Build the neasy-f tests" ${PROJECT_IS_TOP_LEVEL})
+option(NEASYF_DOWNLOAD_PFUNIT "Download pFUnit as part of the configuration" ${NEASYF_BUILD_TESTS})
 
 add_library(neasyf)
 target_sources(neasyf PRIVATE
@@ -42,4 +44,53 @@ target_link_libraries(neasyf PUBLIC netCDF::netcdff)
 
 if (NEASYF_BUILD_EXAMPLES)
   add_subdirectory(examples)
+endif()
+
+if (NEASYF_BUILD_TESTS)
+  if (NEASYF_DOWNLOAD_PFUNIT)
+    message(STATUS "Downloading pFUnit...")
+    include(FetchContent)
+    set(NEASYF_DOWNLOAD_PFUNIT_URL "https://github.com/Goddard-Fortran-Ecosystem/pFUnit"
+      CACHE STRING "URL of pFUnit repository")
+
+    set(NEASYF_PFUNIT_LOCATION "${NEASYF_DOWNLOAD_PFUNIT_URL}")
+
+    FetchContent_Declare(
+      pfunit
+      GIT_REPOSITORY ${NEASYF_DOWNLOAD_PFUNIT_URL}
+      GIT_TAG        main
+      )
+
+    set(SKIP_OPENMP YES CACHE BOOL "" FORCE)
+    set(SKIP_MPI YES CACHE BOOL "" FORCE)
+    # Workaround for bug in current main at time of commit
+    set(BUILD_SHARED ${BUILD_SHARED_LIBS})
+    if (NOT CMAKE_Fortran_FLAGS)
+      if (CMAKE_Fortran_COMPILER_ID STREQUAL GNU)
+        # Workaround for an issue in pFUnit: preprocessor macro
+        # expansion of the current source directory, which may
+        # truncate the line
+        set(CMAKE_Fortran_FLAGS "-ffree-line-length-none" CACHE STRING "" FORCE)
+        message(STATUS "Setting CMAKE_Fortran_FLAGS = ${CMAKE_Fortran_FLAGS}")
+      endif()
+    endif()
+    FetchContent_MakeAvailable(pfunit)
+  else()
+    find_package(PFUNIT REQUIRED)
+    set(NEASYF_PFUNIT_LOCATION "${PFUNIT_ROOT}")
+  endif()
+
+  include(CTest)
+  enable_testing()
+
+  set(NEASYF_CTEST_CASES)
+  neasyf_add_standard_tests(TEST_NAMES
+    dims
+    )
+  add_custom_target(check
+    COMMAND ctest --output-on-failure
+    DEPENDS ${NEASYF_CTEST_CASES}
+    )
+else()
+  set(NEASYF_PFUNIT_LOCATION "Not used")
 endif()

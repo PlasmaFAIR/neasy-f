@@ -1,0 +1,132 @@
+module test_dims
+  use funit
+  implicit none
+
+  character(len=1024) :: temp_file
+  integer :: file_id
+
+contains
+  @before
+  subroutine setup
+    use neasyf, only : neasyf_open
+    character(len=1024) :: temp_dir
+    integer :: length, status
+
+    call get_environment_variable("TMP", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) call get_environment_variable("TEMP", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) call get_environment_variable("TMPDIR", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) temp_dir = "/tmp"
+
+    temp_file = trim(temp_dir) // "/test.nc"
+
+    file_id = neasyf_open(temp_file, "w")
+  end subroutine setup
+  
+  @after
+  subroutine teardown
+    integer :: unit
+    open(newunit=unit, file=temp_file)
+    close(unit, status="delete")
+  end subroutine teardown
+  
+  @test
+  subroutine test_create_dims_values
+    use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
+    use netcdf
+    integer :: dim_id, length, var_id
+    integer :: dim_id2, var_id2
+    real, dimension(3), parameter :: expected_coords = [1.1, 2.2, 3.3]
+    real, dimension(3) :: actual_coords
+
+    call neasyf_dim(file_id, "dim1", expected_coords, dimid=dim_id)
+    call neasyf_close(file_id)
+
+    @assertGreaterThan(dim_id, -1)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_dimid(file_id, "dim1", dim_id))
+    call neasyf_error(nf90_inquire_dimension(file_id, dim_id, len=length))
+    call neasyf_error(nf90_inq_varid(file_id, "dim1", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, actual_coords))
+    call neasyf_dim(file_id, "dim1", dimid=dim_id2, varid=var_id2)
+
+    call neasyf_error(nf90_close(file_id))
+
+    @assertEqual(length, size(expected_coords))
+    @assertEqual(actual_coords, expected_coords)
+    @assertEqual(dim_id, dim_id2)
+    @assertEqual(var_id, var_id2)
+  end subroutine test_create_dims_values
+
+  @test
+  subroutine test_create_dims_size
+    use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
+    use netcdf
+    integer :: dim_id, length, var_id
+    real, dimension(*), parameter :: expected_coords = [1, 2, 3, 4, 5]
+    real, dimension(size(expected_coords)) :: actual_coords
+
+    call neasyf_dim(file_id, "dim1", dim_size=5, dimid=dim_id)
+    call neasyf_close(file_id)
+
+    @assertGreaterThan(dim_id, -1)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_dimid(file_id, "dim1", dim_id))
+    call neasyf_error(nf90_inquire_dimension(file_id, dim_id, len=length))
+    call neasyf_error(nf90_inq_dimid(file_id, "dim1", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, actual_coords))
+    call neasyf_error(nf90_close(file_id))
+
+    @assertEqual(length, size(expected_coords))
+    @assertEqual(actual_coords, expected_coords)
+  end subroutine test_create_dims_size
+
+  @test
+  subroutine test_create_unlimited_dims
+    use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
+    use netcdf
+    integer :: dim1_id, dim1_var_id, dim2_id, length, num_dims, unlim_dim
+
+    call neasyf_dim(file_id, "dim1", [1, 2, 3], dimid=dim1_id, unlimited=.true., varid=dim1_var_id)
+    call neasyf_dim(file_id, "dim2", [1, 2, 3], dimid=dim2_id, unlimited=.false.)
+    call neasyf_error(nf90_put_var(file_id, dim1_var_id, 5, start=[4]))
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inquire(file_id, ndimensions=num_dims))
+    @assertEqual(num_dims, 2)
+
+    call neasyf_error(nf90_inq_dimid(file_id, "dim1", dim1_id))
+    call neasyf_error(nf90_inquire_dimension(file_id, dim1_id, len=length))
+    @assertEqual(length, 4)
+
+    ! This only returns the first unlimited dimension
+    call neasyf_error(nf90_inquire(file_id, unlimiteddimid=unlim_dim))
+    @assertEqual(unlim_dim, dim1_id)
+
+    call neasyf_error(nf90_close(file_id))
+
+  end subroutine test_create_unlimited_dims
+
+  @test
+  subroutine test_create_dims_attributes
+    use neasyf, only : neasyf_dim, neasyf_close, neasyf_error
+    use netcdf
+    integer :: dim_id, length
+    character(len=nf90_max_name) :: unit_value, desc_value
+
+    call neasyf_dim(file_id, "dim1", [1, 2, 3], dimid=dim_id, units="T", description="test var")
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_varid(file_id, "dim1", dim_id))
+    call neasyf_error(nf90_get_att(file_id, dim_id, "units", unit_value))
+    call neasyf_error(nf90_get_att(file_id, dim_id, "description", desc_value))
+    call neasyf_error(nf90_close(file_id))
+
+    @assertEqual(unit_value, "T")
+    @assertEqual(desc_value, "test var")
+  end subroutine test_create_dims_attributes
+
+end module test_dims
