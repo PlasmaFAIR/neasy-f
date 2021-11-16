@@ -56,6 +56,13 @@ if __name__ == "__main__":
         help="Maximum rank to generate implementations for. Note that although Fortran supports 15 dimensions, netCDF only supports 7",
         default=7,
     )
+    parser.add_argument(
+        "-w",
+        "--write-to",
+        type=str,
+        help="Name of file to write output to. Prints to screen by default",
+        default=None,
+    )
 
     args = parser.parse_args()
 
@@ -66,4 +73,8 @@ if __name__ == "__main__":
     with open("neasy_f.in.f90", "r") as f:
         contents = f.read()
 
-    print(contents.format(**templates))
+    if args.write_to is None:
+        print(contents.format(**templates))
+    else:
+        with open(args.write_to, "w") as f:
+            f.write(contents.format(**templates))

@@ -16,6 +16,7 @@ string(COMPARE EQUAL
 option(NEASYF_BUILD_EXAMPLES "Build the neasy-f examples" ${PROJECT_IS_TOP_LEVEL})
 option(NEASYF_BUILD_TESTS "Build the neasy-f tests" ${PROJECT_IS_TOP_LEVEL})
 option(NEASYF_DOWNLOAD_PFUNIT "Download pFUnit as part of the configuration" ${NEASYF_BUILD_TESTS})
+option(NEASYF_GENERATE_SOURCE "Generate the source file from the input files. This option is for developers only" ${PROJECT_IS_TOP_LEVEL})
 
 add_library(neasyf)
 target_sources(neasyf PRIVATE
@@ -41,6 +42,29 @@ target_include_directories(neasyf PUBLIC
 
 find_package(netCDFFortran REQUIRED)
 target_link_libraries(neasyf PUBLIC netCDF::netcdff)
+
+if (NEASYF_GENERATE_SOURCE)
+  find_package(Python3)
+  if (NOT Python3_FOUND)
+    message(FATAL_ERROR "Python not found. Unable to generate source file. If you just want to build \
+neasy-f, then disable source generation with NEASYF_GENERATE_SOURCE=off.")
+  endif()
+
+  set(neasy_f_source_file "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.f90")
+  add_custom_command(OUTPUT ${neasy_f_source_file}
+    COMMAND ${Python3_EXECUTABLE} generate_source.py --write-to ${neasy_f_source_file}
+    DEPENDS
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/generate_source.py"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.type.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.get_var.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.put_var.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.read.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.write.in.f90"
+    WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
+    COMMENT "Generating source code"
+    )
+endif()
 
 if (NEASYF_BUILD_EXAMPLES)
   add_subdirectory(examples)
