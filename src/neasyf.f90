@@ -678,7 +678,8 @@ contains
     end if
 
     if (.not. (present(values) .or. present(dim_size) .or. present(unlimited))) then
-      error stop "neasyf_dim: Dimension does not exist and none of 'values', 'dim_size', or 'unlimited' given. Exactly one must be present"
+      error stop "neasyf_dim: Dimension does not exist and none of 'values', 'dim_size', or 'unlimited' given. &
+           &Exactly one must be present"
     end if
 
     ! TODO: Check existing size is compatible with current arguments
@@ -706,7 +707,8 @@ contains
     end if
 
     if (local_size < 0) then
-      error stop "neasyf_dim: Dimension does not exist, and initial size not set. Either pass one of 'values' or 'dim_size', or set 'unlimited=.true.'"
+      error stop "neasyf_dim: Dimension does not exist, and initial size not set. &
+           &Either pass one of 'values' or 'dim_size', or set 'unlimited=.true.'"
     end if
 
     status = nf90_def_dim(parent_id, name, local_size, dim_id)
