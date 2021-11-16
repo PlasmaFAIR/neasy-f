@@ -2,14 +2,14 @@
 import argparse
 
 TEMPLATE_FILES = {
-    "neasyf_type_rank": "neasy_f.type.in.f90",
-    "polymorphic_get_var_rank": "neasy_f.get_var.in.f90",
-    "polymorphic_put_var_rank": "neasy_f.put_var.in.f90",
-    "neasyf_read_rank": "neasy_f.read.in.f90",
-    "neasyf_write_rank": "neasy_f.write.in.f90",
+    "neasyf_type_rank": "neasyf.type.in.f90",
+    "polymorphic_get_var_rank": "neasyf.get_var.in.f90",
+    "polymorphic_put_var_rank": "neasyf.put_var.in.f90",
+    "neasyf_read_rank": "neasyf.read.in.f90",
+    "neasyf_write_rank": "neasyf.write.in.f90",
 }
 
-MAIN_FILE = "neasy_f.in.f90"
+MAIN_FILE = "neasyf.in.f90"
 
 
 def array(n):
@@ -70,7 +70,7 @@ if __name__ == "__main__":
     for name, file in TEMPLATE_FILES.items():
         templates.update(make_function_template(name, file, args.max_rank))
 
-    with open("neasy_f.in.f90", "r") as f:
+    with open(MAIN_FILE, "r") as f:
         contents = f.read()
 
     if args.write_to is None:

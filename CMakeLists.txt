@@ -20,7 +20,7 @@ option(NEASYF_GENERATE_SOURCE "Generate the source file from the input files. Th
 
 add_library(neasyf)
 target_sources(neasyf PRIVATE
-  src/neasy_f.f90
+  src/neasyf.f90
   )
 add_library(neasyf::neasyf ALIAS neasyf)
 
@@ -50,17 +50,17 @@ if (NEASYF_GENERATE_SOURCE)
 neasy-f, then disable source generation with NEASYF_GENERATE_SOURCE=off.")
   endif()
 
-  set(neasy_f_source_file "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.f90")
+  set(neasy_f_source_file "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.f90")
   add_custom_command(OUTPUT ${neasy_f_source_file}
     COMMAND ${Python3_EXECUTABLE} generate_source.py --write-to ${neasy_f_source_file}
     DEPENDS
       "${CMAKE_CURRENT_SOURCE_DIR}/src/generate_source.py"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.type.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.get_var.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.put_var.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.read.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasy_f.write.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.type.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.get_var.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.put_var.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.read.in.f90"
+      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.write.in.f90"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     COMMENT "Generating source code"
     )

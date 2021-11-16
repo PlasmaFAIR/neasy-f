@@ -7,12 +7,12 @@ src_dir: ./src
 output_dir: ./docs/html
 predocmark: >
 exclude:
-      neasy_f.in.f90
-      neasy_f.type.in.f90
-      neasy_f.get_var.in.f90
-      neasy_f.put_var.in.f90
-      neasy_f.read.in.f90
-      neasy_f.write.in.f90
+      neasyf.in.f90
+      neasyf.type.in.f90
+      neasyf.get_var.in.f90
+      neasyf.put_var.in.f90
+      neasyf.read.in.f90
+      neasyf.write.in.f90
 license: bsd
 ---
 
@@ -113,5 +113,5 @@ The various `*.in.f90` files hold the "real" implementations, and
 code, run:
 
 ```
-$ ./generate_source.py > neasy_f.f90
+$ ./generate_source.py --write-to neasyf.f90
 ```
