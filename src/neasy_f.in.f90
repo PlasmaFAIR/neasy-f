@@ -190,9 +190,10 @@ contains
     integer :: i
     integer :: local_size
     integer, dimension(:), allocatable :: local_values
+    logical :: local_unlimited
 
     if (present(values) .and. present(dim_size)) then
-      error stop "Both 'values' and 'dim_size' given in 'neasyf_dim'. Only one must be present"
+      error stop "neasyf_dim: Both 'values' and 'dim_size' given. Only one must be present"
     end if
 
     status = nf90_inq_dimid(parent_id, name, dim_id)
@@ -213,7 +214,16 @@ contains
       call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
     end if
 
-    ! Dimension doesn't exist, so let's create it
+    if (.not. (present(values) .or. present(dim_size) .or. present(unlimited))) then
+      error stop "neasyf_dim: Dimension does not exist and none of 'values', 'dim_size', or 'unlimited' given. Exactly one must be present"
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    local_size = -1
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
     if (present(values)) then
       local_size = size(values)
       nf_type = neasyf_type(values)
@@ -222,46 +232,46 @@ contains
       local_size = dim_size
       local_values = [(i, i=1, dim_size)]
       nf_type = neasyf_type(local_values)
-    else
-      error stop "Dimension does not exist and neither 'values' and 'dim_size' given in 'neasyf_dim'. Exactly one must be present"
     end if
 
+    ! Setting the dimension to be unlimited overrides the size
     if (present(unlimited)) then
+      local_unlimited = unlimited
       if (unlimited) then
         local_size = NF90_UNLIMITED
       end if
     end if
 
+    if (local_size < 0) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size not set. Either pass one of 'values' or 'dim_size', or set 'unlimited=.true.'"
+    end if
+
     status = nf90_def_dim(parent_id, name, local_size, dim_id)
     call neasyf_error(status, dim=name, dimid=dim_id)
-
-    status = nf90_def_var(parent_id, name, nf_type, dim_id, var_id)
-    call neasyf_error(status, var=name, varid=var_id)
-
-    if (present(units)) then
-      status = nf90_put_att(parent_id, var_id, "units", units)
-      call neasyf_error(status, var=name, varid=var_id, att="units")
-    end if
-
-    if (present(description)) then
-      status = nf90_put_att(parent_id, var_id, "description", description)
-      call neasyf_error(status, var=name, varid=var_id, att="description")
-    end if
 
     if (present(dimid)) then
       dimid = dim_id
     end if
 
+    ! For unlimited dimensions, if no initial size or values provided, we're done
+    if (local_unlimited .and. .not. (present(values) .or. present(dim_size))) then
+      if (present(varid)) then
+        error stop "neasyf_dim: Deferring variable creation, but 'varid' passed and would be given an invalid value. &
+             &Please remove 'varid' or pass one of 'values' or 'dim_size'"
+      end if
+      return
+    end if
+
+    ! We could avoid the duplicated call here by copying the values into an allocatable class(*)
+    if (present(values)) then
+      call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, description=description, varid=var_id)
+    else
+      call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, description=description, varid=var_id)
+    end if
+
     if (present(varid)) then
       varid = var_id
     end if
-
-    if (present(values)) then
-      status = polymorphic_put_var(parent_id, var_id, values)
-    else
-      status = nf90_put_var(parent_id, var_id, local_values)
-    end if
-    call neasyf_error(status, parent_id, var=name, varid=dim_id)
   end subroutine neasyf_dim
 
   subroutine neasyf_write_scalar(parent_id, name, values, units, description, start)

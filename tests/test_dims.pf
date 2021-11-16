@@ -106,6 +106,34 @@ contains
     call neasyf_error(nf90_close(file_id))
 
   end subroutine test_create_unlimited_dims
+  @test
+  subroutine test_create_unlimited_dims_no_initial_value
+    use neasyf, only : neasyf_dim, neasyf_close, neasyf_error, neasyf_write
+    integer :: dim1_id, dim1_var_id, dim2_id, length, num_dims, unlim_dim
+
+    call neasyf_dim(file_id, "dim1", dimid=dim1_id, unlimited=.true.)
+    call neasyf_dim(file_id, "dim2", [1, 2, 3], dimid=dim2_id, unlimited=.false.)
+    call neasyf_write(file_id, "dim1", values=[1.0], dim_ids=[dim1_id])
+    call neasyf_write(file_id, "dim1", values=2.0, start=[2])
+    call neasyf_write(file_id, "dim1", values=3.0, start=[3])
+    call neasyf_write(file_id, "dim1", values=4.0, start=[4])
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inquire(file_id, ndimensions=num_dims))
+    @assertEqual(num_dims, 2)
+
+    call neasyf_error(nf90_inq_dimid(file_id, "dim1", dim1_id))
+    call neasyf_error(nf90_inquire_dimension(file_id, dim1_id, len=length))
+    @assertEqual(length, 4)
+
+    ! This only returns the first unlimited dimension
+    call neasyf_error(nf90_inquire(file_id, unlimiteddimid=unlim_dim))
+    @assertEqual(unlim_dim, dim1_id)
+
+    call neasyf_error(nf90_close(file_id))
+
+  end subroutine test_create_unlimited_dims_no_initial_value
 
   @test
   subroutine test_create_dims_attributes
