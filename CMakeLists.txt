@@ -13,10 +13,19 @@ string(COMPARE EQUAL
   PROJECT_IS_TOP_LEVEL
 )
 
+# We need this early on to set the install location of .mod files
+include(GNUInstallDirs)
+
+##################################################
+# Options
+
 option(NEASYF_BUILD_EXAMPLES "Build the neasy-f examples" ${PROJECT_IS_TOP_LEVEL})
 option(NEASYF_BUILD_TESTS "Build the neasy-f tests" ${PROJECT_IS_TOP_LEVEL})
 option(NEASYF_DOWNLOAD_PFUNIT "Download pFUnit as part of the configuration" ${NEASYF_BUILD_TESTS})
 option(NEASYF_GENERATE_SOURCE "Generate the source file from the input files. This option is for developers only" ${PROJECT_IS_TOP_LEVEL})
+
+##################################################
+# neasy-f library
 
 add_library(neasyf)
 target_sources(neasyf PRIVATE
@@ -32,16 +41,14 @@ set(neasyf_module_install_directory "${CMAKE_INSTALL_INCLUDEDIR}" CACHE STRING
 set_target_properties(neasyf PROPERTIES
   Fortran_FORMAT FREE
   Fortran_MODULE_DIRECTORY ${neasyf_module_directory}
+  LIBRARY_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
+  ARCHIVE_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/lib
   )
-
 
 target_include_directories(neasyf PUBLIC
   $<BUILD_INTERFACE:${neasyf_module_directory}>
   $<INSTALL_INTERFACE:${neasyf_module_install_directory}>
   )
-
-find_package(netCDFFortran REQUIRED)
-target_link_libraries(neasyf PUBLIC netCDF::netcdff)
 
 if (NEASYF_GENERATE_SOURCE)
   find_package(Python3)
@@ -65,6 +72,15 @@ neasy-f, then disable source generation with NEASYF_GENERATE_SOURCE=off.")
     COMMENT "Generating source code"
     )
 endif()
+
+##################################################
+# Dependencies
+
+find_package(netCDFFortran REQUIRED)
+target_link_libraries(neasyf PUBLIC netCDF::netcdff)
+
+##################################################
+# Examples and tests
 
 if (NEASYF_BUILD_EXAMPLES)
   add_subdirectory(examples)
@@ -122,3 +138,51 @@ if (NEASYF_BUILD_TESTS)
 else()
   set(NEASYF_PFUNIT_LOCATION "Not used")
 endif()
+
+##################################################
+# Installation
+
+install(TARGETS neasyf
+  EXPORT neasyfTargets
+  LIBRARY DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  ARCHIVE DESTINATION "${CMAKE_INSTALL_LIBDIR}"
+  )
+install(DIRECTORY "${neasyf_module_directory}/"
+  DESTINATION "${neasyf_module_install_directory}"
+  FILES_MATCHING PATTERN "*.mod"
+  )
+
+include(CMakePackageConfigHelpers)
+write_basic_package_version_file(
+  neasyfConfigVersion.cmake
+  VERSION ${PACKAGE_VERSION}
+  COMPATIBILITY SameMajorVersion
+  )
+
+install(EXPORT neasyfTargets
+  FILE neasyfTargets.cmake
+  NAMESPACE neasyf::
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/neasyf"
+  )
+
+configure_package_config_file(neasyfConfig.cmake.in neasyfConfig.cmake
+  INSTALL_DESTINATION "${CMAKE_CURRENT_BINARY_DIR}/neasyfConfig.cmake"
+  )
+
+# CMake configuration files
+install(
+  FILES
+      "${CMAKE_CURRENT_BINARY_DIR}/neasyfConfig.cmake"
+      "${CMAKE_CURRENT_BINARY_DIR}/neasyfConfigVersion.cmake"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/GKfunctions.cmake"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindnetCDF.cmake"
+      "${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindnetCDFFortran.cmake"
+  DESTINATION "${CMAKE_INSTALL_LIBDIR}/cmake/neasyf"
+  )
+
+export(EXPORT neasyfTargets
+  FILE "${CMAKE_CURRENT_BINARY_DIR}/neasyfTargets.cmake"
+  NAMESPACE neasyf::
+  )
+
+export(PACKAGE neasyf)
