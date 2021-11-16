@@ -1,21 +1,3 @@
----
-project: neasy-f
-project_github: https://github.com/PlasmaFAIR/neasy-f
-summary: "Nice and easy" netCDF-Fortran wrapper
-author: Peter Hill
-src_dir: ./src
-output_dir: ./docs/html
-predocmark: >
-exclude:
-      neasyf.in.f90
-      neasyf.type.in.f90
-      neasyf.get_var.in.f90
-      neasyf.put_var.in.f90
-      neasyf.read.in.f90
-      neasyf.write.in.f90
-license: bsd
----
-
 neasy-f
 =======
 
