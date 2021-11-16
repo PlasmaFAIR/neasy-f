@@ -1,3 +1,25 @@
+!> SPDX-License-Identifier: BSD-3-Clause
+!> author: Peter Hill
+!> ---
+!>
+!> neasy-f is a short-and-sweet wrapper for netCDF-Fortran. Rather than
+!> attempting to be a feature-complete replacement, neasy-f wraps some common
+!> functions together and is opinionated about usage.
+!>
+!> Example
+!> -------
+!>
+!> ```fortran
+!> ncid = neasyf_open("my_file.nc", "w")
+!>
+!> call neasyf_dim(ncid, "x", unlimited=.true., x_dimid)
+!> call neasyf_dim(ncid, "y", dim_size=NY, y_dimid)
+!>
+!> call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
+!>                   units="Pa", description="Pressure")
+!>
+!> call neasyf_close(ncid)
+!> ```
 module neasyf
   use netcdf, only : NF90_INT
   implicit none
@@ -9,7 +31,7 @@ module neasyf
 
   interface neasyf_type
     module procedure neasyf_type_scalar
-{mod_proc_neasyf_type_rank}   
+{mod_proc_neasyf_type_rank}
   end interface neasyf_type
 
   interface neasyf_write
@@ -163,6 +185,7 @@ contains
   !> The netCDF IDs of the dimension and corresponding variable can be returned
   !> through [[dimid]] and [[varid]] respectively.
   subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, description, unlimited)
+
     use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_EBADDIM, NF90_ENOTVAR, NF90_UNLIMITED
     !> Name of the variable
