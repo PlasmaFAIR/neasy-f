@@ -1389,7 +1389,7 @@ contains
 
     if (present(varid)) then
        if (.not. present(ncid)) then
-         error stop 'ERROR in netcdf_error: ncid missing while varid present in the argument'
+         error stop 'ERROR in neasyf_error: ncid missing while varid present in the argument'
        end if
 
        if (present(att) ) then
@@ -1405,7 +1405,7 @@ contains
                 & ' variable name: ', trim (varname)
          else
            write (error_unit, *) ''
-           write (error_unit, '(3a,i8,a,i8)', advance='no') 'ERROR in netcdf_error: ', &
+           write (error_unit, '(3a,i8,a,i8)', advance='no') 'ERROR in neasyf_error: ', &
                 trim (nf90_strerror(ist)), ' in varid: ', varid, &
                 ', ncid: ', ncid
          end if
@@ -1414,7 +1414,7 @@ contains
 
     if (present(dimid)) then
        if (.not. present(ncid)) then
-         error stop 'ERROR in netcdf_error: ncid missing while dimid present in the argument'
+         error stop 'ERROR in neasyf_error: ncid missing while dimid present in the argument'
        end if
 
        ist = nf90_inquire_dimension (ncid, dimid, dimname)
@@ -1423,7 +1423,7 @@ contains
               & ' dimension name: ', trim (dimname)
        else
          write (error_unit, *) ''
-         write (error_unit, '(3a,i8,a,i8)', advance='no') 'ERROR in netcdf_error: ', &
+         write (error_unit, '(3a,i8,a,i8)', advance='no') 'ERROR in neasyf_error: ', &
               trim (nf90_strerror(ist)), ' in dimid: ', dimid, &
               ', ncid: ', ncid
        end if
@@ -1434,6 +1434,6 @@ contains
     ! append line-break
     write(error_unit,*)
 
-    error stop "Aborted by netcdf_error"
+    error stop "Aborted by neasyf_error"
   end subroutine neasyf_error
 end module neasyf
