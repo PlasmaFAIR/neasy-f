@@ -264,7 +264,7 @@ contains
     call neasyf_error(status, parent_id, var=name, varid=dim_id)
   end subroutine neasyf_dim
 
-  subroutine neasyf_write_scalar(parent_id, name, value_, units, description)
+  subroutine neasyf_write_scalar(parent_id, name, values, units, description, start)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
@@ -273,11 +273,13 @@ contains
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), intent(in) :: value_
+    class(*), intent(in) :: values
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long description of coordinate
     character(len=*), optional, intent(in) :: description
+    !> Insertion index (one-based). Note that this is an array with one element!
+    integer, dimension(1), optional, intent(in) :: start
 
     integer(nf_kind) :: nf_type
     integer :: status
@@ -286,7 +288,7 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      nf_type = neasyf_type(value_)
+      nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, var_id)
       call neasyf_error(status, var=name, varid=var_id)
@@ -304,7 +306,7 @@ contains
       call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, value_)
+    status = polymorphic_put_var(parent_id, var_id, values, start=start)
     call neasyf_error(status, parent_id, var=name, varid=var_id)
   end subroutine neasyf_write_scalar
 
