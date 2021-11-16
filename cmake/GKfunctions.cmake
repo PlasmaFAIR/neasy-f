@@ -32,6 +32,7 @@ function(neasyf_add_test test_source test_name)
   target_link_libraries(neasyf_tests_${test_name} neasyf::neasyf)
   list(APPEND NEASYF_CTEST_CASES neasyf_tests_${test_name})
   set(NEASYF_CTEST_CASES ${NEASYF_CTEST_CASES} PARENT_SCOPE)
+  add_dependencies(build-check neasyf_tests_${test_name})
 endfunction()
 
 # Helper function to easily add multiple separate

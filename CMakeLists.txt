@@ -107,6 +107,7 @@ if (NEASYF_BUILD_TESTS)
   include(CTest)
   enable_testing()
 
+  add_custom_target(build-check)
   set(NEASYF_CTEST_CASES)
   neasyf_add_standard_tests(TEST_NAMES
     dims
@@ -117,6 +118,7 @@ if (NEASYF_BUILD_TESTS)
     COMMAND ctest --output-on-failure
     DEPENDS ${NEASYF_CTEST_CASES}
     )
+  add_dependencies(check build-check)
 else()
   set(NEASYF_PFUNIT_LOCATION "Not used")
 endif()
