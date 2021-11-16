@@ -4,7 +4,8 @@
 !>
 !> neasy-f is a short-and-sweet wrapper for netCDF-Fortran. Rather than
 !> attempting to be a feature-complete replacement, neasy-f wraps some common
-!> functions together and is opinionated about usage.
+!> functions together and is opinionated about usage. neasy-f can handle all of
+!> the basic netCDF data types, both scalar and arrays up to 7D.
 !>
 !> Example
 !> -------
@@ -20,12 +21,40 @@
 !>
 !> call neasyf_close(ncid)
 !> ```
+!>
+!> Usage
+!> -----
+!>
+!> There are five main functions/subroutines provided by neasy-f:
+!>
+!> - Open a file with [[neasyf_open]]
+!> - Create dimensions with [[neasyf_dim]]
+!> - Create and write variables with [[neasyf_write]]
+!> - Read variables with [[neasyf_read]]
+!> - Close a file with [[neasyf_close]]
+!>
+!> These all handle errors automatically, aborting the program if any are
+!> detected. If you want to handle errors yourself, drop down to the standard
+!> netCDF-Fortran API.
+!>
+!> There are two more public neasy-f functions that can be useful,
+!> even when using the standard netCDF-Fortran API:
+!>
+!> - Handle errors with [[neasyf_error]]
+!> - Get the netCDF type constant with [[neasyf_type]]
+!>
+!> Developing
+!> ----------
+!>
+!> If you want to develop or make changes to neasy-f, you should do so to the
+!> `*.in.f90` files and run the `generate_source.py` script -- or just rebuild
+!> the library using CMake.
 module neasyf
   use netcdf, only : NF90_INT
   implicit none
 
   private
-  public :: neasyf_open, neasyf_close, neasyf_dim, neasyf_write, neasyf_read, neasyf_error
+  public :: neasyf_open, neasyf_close, neasyf_type, neasyf_dim, neasyf_write, neasyf_read, neasyf_error
 
   integer, parameter :: nf_kind = kind(NF90_INT)
 

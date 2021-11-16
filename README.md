@@ -81,14 +81,68 @@ Requirements
 
 neasy-f requires a Fortran 2008 compiler and netCDF-Fortran.
 
+
 Compilation
 -----------
+
+There are a few ways you can use neasy-f in your project.
+
+### Single file inclusion
+
+Perhaps the easiest way is to copy `src/neasyf.f90` into your project and build
+it as part of your package. The downside to this approach is that you will have
+to apply any updates manually. You'll also need to make sure you compile against
+netCDF-Fortran correctly.
+
+### External library
 
 You can build neasy-f into a library using CMake:
 
 ```bash
 $ cmake . -B build
 $ cmake --build build
+```
+
+Note that if you do not have `nf-fortran` in your `$PATH`, you will need to tell
+CMake the location of netCDF-Fortran like:
+
+```bash
+$ cmake . -B build -DnetCDFFortran_ROOT=/path/to/netcdf
+```
+
+You can then use the built libraries under `build/lib` and the `.mod` file under
+`build/mod`. You can install these somewhere convenient with:
+
+```bash
+$ cmake . -B build -DCMAKE_INSTALL_PREFIX=/path/to/install
+$ cmake --build build --target install
+```
+
+Neasy-f installs configuration files for CMake, so you can include neasy-f in
+your CMake project with:
+
+```cmake
+find_package(neasyf)
+
+target_link_libraries(<your target> PRIVATE neasyf::neasyf)
+```
+
+You can point CMake at either the install location or the build directory
+directly with `-Dneasyf_ROOT=/path/to/install/or/build/dir`
+
+### Internal target in CMake
+
+You can use neasy-f directly in a CMake project with `FetchContent` like so:
+
+```cmake
+include(FetchContent)
+
+FetchContent_declare(neasyf
+    GIT_REPOSITORY https://github.com/PlasmaFAIR/neasy-f.git
+    GIT_TAG v0.1.0)
+FetchContent_makeavailable(neasyf)
+
+target_link_libraries(<your target> PRIVATE neasyf::neasyf)
 ```
 
 Implementation
@@ -115,3 +169,6 @@ code, run:
 ```
 $ ./generate_source.py --write-to neasyf.f90
 ```
+
+If you develop neasy-f and make changes to any of the `*.in.f90` files, don't
+forget to re-generate the main `neasyf.f90` file and commit it.
