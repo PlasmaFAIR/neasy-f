@@ -129,6 +129,7 @@ if (NEASYF_BUILD_TESTS)
     dims
     write
     read
+    metadata
     )
   add_custom_target(check
     COMMAND ctest --output-on-failure

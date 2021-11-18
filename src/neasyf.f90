@@ -25,9 +25,10 @@
 !> Usage
 !> -----
 !>
-!> There are five main functions/subroutines provided by neasy-f:
+!> There are six main functions/subroutines provided by neasy-f:
 !>
 !> - Open a file with [[neasyf_open]]
+!> - Write a standard set of metadata with [[neasyf_metadata]]
 !> - Create dimensions with [[neasyf_dim]]
 !> - Create and write variables with [[neasyf_write]]
 !> - Read variables with [[neasyf_read]]
@@ -54,7 +55,8 @@ module neasyf
   implicit none
 
   private
-  public :: neasyf_open, neasyf_close, neasyf_type, neasyf_dim, neasyf_write, neasyf_read, neasyf_error
+  public :: neasyf_open, neasyf_close, neasyf_type, neasyf_dim
+  public :: neasyf_write, neasyf_read, neasyf_error, neasyf_metadata
 
   integer, parameter :: nf_kind = kind(NF90_INT)
 
@@ -150,6 +152,62 @@ contains
     integer, intent(in) :: ncid
     call neasyf_error(nf90_close(ncid), ncid)
   end subroutine neasyf_close
+
+  !> Return the current date and time in ISO8601 format:
+  !>     YYYY-MM-DDThh:mm:ss.ssssZhh:mm
+  function date_iso8601()
+    character(:), allocatable :: date_iso8601
+    character(8) :: date
+    character(10) :: time
+    character(5) :: zone
+    call date_and_time(date, time, zone)
+
+    date_iso8601 = date(1:4) // "-" // date(5:6) // "-" // date (7:8) &
+         // "T" // time(1:2) // ":" // time(3:4) // ":" // time(5:10) &
+         // "Z" // zone(1:3) // ":" // zone(4:5)
+  end function date_iso8601
+
+  !> Write some standard metadata to a "/metadata" group
+  subroutine neasyf_metadata(ncid, software_name, software_version, created, file_id, auto_date)
+    use netcdf, only: nf90_def_grp, nf90_inq_libvers
+    !> NetCDF file ID
+    integer(nf_kind), intent(in) :: ncid
+    !> Name of the software creating this file
+    character(len=*), intent(in) :: software_name
+    !> Version of the software
+    character(len=*), intent(in) :: software_version
+    !> Date and time this file was created. Conflicts with `auto_date`
+    character(len=*), optional, intent(in) :: created
+    !> Software-specific identifier for this file
+    character(len=*), optional, intent(in) :: file_id
+    !> If true, write 'created' with current time. Conflicts with `created`
+    logical, optional, intent(in) :: auto_date
+
+    integer(nf_kind) :: group_id
+
+    if (present(created) .and. present(auto_date)) then
+      error stop "neasyf_metadata: Both 'created' and 'auto_date' given; only one may be present"
+    end if
+
+    call neasyf_error(nf90_def_grp(ncid, "metadata", group_id), &
+                      ncid=ncid, message="creating metadata group")
+
+    call neasyf_write(group_id, "software_name", software_name)
+    call neasyf_write(group_id, "software_version", software_version)
+    call neasyf_write(group_id, "netcdf_version", trim(nf90_inq_libvers()))
+    if (present(created)) then
+      call neasyf_write(group_id, "created", created)
+    end if
+    if (present(file_id)) then
+      call neasyf_write(group_id, "file_id", file_id)
+    end if
+    if (present(auto_date)) then
+      if (auto_date) then
+        call neasyf_write(group_id, "created", date_iso8601())
+      end if
+    end if
+
+  end subroutine neasyf_metadata
 
   !> Return the corresponding netCDF type for [[variable]]
   function neasyf_type_scalar(variable) result(nf_type)

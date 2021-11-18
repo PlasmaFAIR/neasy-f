@@ -1,0 +1,53 @@
+module test_metadata
+  use funit
+  use netcdf
+  use neasyf
+  implicit none
+
+  character(len=1024) :: temp_file
+  integer :: file_id
+
+contains
+  @before
+  subroutine setup
+    character(len=1024) :: temp_dir
+    integer :: length, status
+
+    call get_environment_variable("TMP", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) call get_environment_variable("TEMP", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) call get_environment_variable("TMPDIR", temp_dir, length, status)
+    if (length == 0 .or. status /= 0) temp_dir = "/tmp"
+
+    temp_file = trim(temp_dir) // "/test.nc"
+
+    file_id = neasyf_open(temp_file, "w")
+  end subroutine setup
+  
+  @after
+  subroutine teardown
+    integer :: unit
+    open(newunit=unit, file=temp_file)
+    close(unit, status="delete")
+  end subroutine teardown
+
+  @test
+  subroutine test_write_metadata
+    integer :: group_id
+    integer :: n_vars
+
+    call neasyf_metadata(file_id, &
+         software_name="test_neasyf", &
+         software_version="v0.1.0", &
+         created="2021-11-18", &
+         file_id="0001")
+    call neasyf_close(file_id)
+    
+    file_id = neasyf_open(temp_file, "r")
+    call neasyf_error(nf90_inq_ncid(file_id, "metadata", group_id))
+    call neasyf_error(nf90_inquire(group_id, nVariables=n_vars))
+    call neasyf_close(file_id)
+
+    @assertEqual(n_vars, 5)
+    
+  end subroutine test_write_metadata
+end module test_metadata
