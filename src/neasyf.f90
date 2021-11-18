@@ -143,7 +143,7 @@ contains
     case default
       error stop 'neasyf: Unsupported action ' // action
     end select
-    call neasyf_error(status)
+    call neasyf_error(status, file=filename, ncid=ncid)
   end function neasyf_open
 
   !> Close an open file
@@ -230,7 +230,8 @@ contains
     type is (character(len=*))
       nf_type = NF90_CHAR
     class default
-      nf_type = -1
+      error stop "neasfy_type: Unknown Fortran type, cannot convert to netCDF type. &
+           &Neasy-f cannot handle this Fortran type, please use the standard netCDF API"
     end select
   end function neasyf_type_scalar
 
@@ -753,7 +754,8 @@ contains
       end if
 
       if (present(varid)) then
-        call neasyf_error(nf90_inq_varid(parent_id, name, var_id))
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
         varid = var_id
       end if
 
@@ -799,7 +801,7 @@ contains
     end if
 
     status = nf90_def_dim(parent_id, name, local_size, dim_id)
-    call neasyf_error(status, dim=name, dimid=dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
 
     if (present(dimid)) then
       dimid = dim_id
@@ -853,7 +855,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, var_id)
-      call neasyf_error(status, var=name, varid=var_id)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -869,7 +871,7 @@ contains
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start=start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
   end subroutine neasyf_write_scalar
 
   !> Write a variable to a netCDF file or group, defining it if it isn't already
@@ -921,11 +923,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -981,11 +983,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -1041,11 +1043,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -1101,11 +1103,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -1161,11 +1163,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -1221,11 +1223,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -1281,11 +1283,11 @@ contains
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
@@ -1293,179 +1295,187 @@ contains
   end subroutine neasyf_write_rank7
 
 
-  subroutine neasyf_read_scalar(parent_id, var_name, values)
+  subroutine neasyf_read_scalar(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_scalar
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank1(parent_id, var_name, values)
+  subroutine neasyf_read_rank1(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank1
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank2(parent_id, var_name, values)
+  subroutine neasyf_read_rank2(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:, :), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank2
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank3(parent_id, var_name, values)
+  subroutine neasyf_read_rank3(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:, :, :), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank3
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank4(parent_id, var_name, values)
+  subroutine neasyf_read_rank4(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:, :, :, :), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank4
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank5(parent_id, var_name, values)
+  subroutine neasyf_read_rank5(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:, :, :, :, :), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank5
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank6(parent_id, var_name, values)
+  subroutine neasyf_read_rank6(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:, :, :, :, :, :), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank6
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank7(parent_id, var_name, values)
+  subroutine neasyf_read_rank7(parent_id, name, values)
     use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
-    character(len=*), intent(in) :: var_name
+    character(len=*), intent(in) :: name
     !> Storage for the variable
     class(*), dimension(:, :, :, :, :, :, :), intent(out) :: values
 
     integer :: status
-    integer(nf_kind) :: file_var_id
-    character(len=nf90_max_name) :: file_var_name
+    integer(nf_kind) :: var_id
 
-    status = nf90_inq_varid(parent_id, var_name, file_var_id)
-    call neasyf_error(status, ncid=parent_id)
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
 
-    status = polymorphic_get_var(parent_id, file_var_id, values)
+    status = polymorphic_get_var(parent_id, var_id, values)
 
-    call neasyf_error(status, parent_id, varid=file_var_id, var=var_name)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
   end subroutine neasyf_read_rank7
 
 
@@ -1553,7 +1563,7 @@ contains
        end if
     end if
 
-    if (present(message)) write (error_unit, '(a)', advance='no') trim(message)
+    if (present(message)) write (error_unit, '(a)', advance='no') " " // trim(message)
 
     ! append line-break
     write(error_unit,*)

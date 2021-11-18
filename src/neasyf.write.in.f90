@@ -47,11 +47,11 @@
     ! Something went wrong with one of the previous two calls
     if (status /= NF90_NOERR) then
       call neasyf_error(status, var=name, varid=var_id, &
-                        message="(define_and_write_integer)")
+                        message="defining variable")
     end if
 
     status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
