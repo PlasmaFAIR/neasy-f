@@ -33,41 +33,59 @@ contains
   @test
   subroutine test_write_1d
     integer, parameter :: NX = 5
-    real, dimension(NX), parameter :: data_out = [55.5, 44.4, 33.3, 22.2, 11.1]
-    real, dimension(NX) :: data_in
+    real, dimension(NX), parameter :: read_data = [55.5, 44.4, 33.3, 22.2, 11.1]
+    real, dimension(NX) :: expected_data
     integer :: x_dim_id, var_id
 
     call neasyf_dim(file_id, "x", dim_size=NX, dimid=x_dim_id)
-    call neasyf_write(file_id, "data", data_out, [x_dim_id])
+    call neasyf_write(file_id, "data", read_data, [x_dim_id])
     call neasyf_close(file_id)
 
     call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
     call neasyf_error(nf90_inq_varid(file_id, "data", var_id))
-    call neasyf_error(nf90_get_var(file_id, var_id, data_in))
+    call neasyf_error(nf90_get_var(file_id, var_id, expected_data))
     call neasyf_close(file_id)
 
-    @assertEqual(data_in, data_out)
+    @assertEqual(expected_data, read_data)
   end subroutine test_write_1d
   
   @test
   subroutine test_write_2d
     integer, parameter :: nx = 5, ny = 3
     integer :: i
-    real, dimension(nx, ny), parameter :: data_out = reshape([(i, i=1, nx*ny)], shape(data_out))
-    real, dimension(nx, ny) :: data_in
+    real, dimension(nx, ny), parameter :: read_data = reshape([(i, i=1, nx*ny)], shape(read_data))
+    real, dimension(nx, ny) :: expected_data
     integer :: x_dim_id, y_dim_id, var_id
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
     call neasyf_dim(file_id, "y", dim_size=ny, dimid=y_dim_id)
-    call neasyf_write(file_id, "data", data_out, [x_dim_id, y_dim_id])
+    call neasyf_write(file_id, "data", read_data, [x_dim_id, y_dim_id])
     call neasyf_close(file_id)
 
     call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
     call neasyf_error(nf90_inq_varid(file_id, "data", var_id))
-    call neasyf_error(nf90_get_var(file_id, var_id, data_in))
+    call neasyf_error(nf90_get_var(file_id, var_id, expected_data))
     call neasyf_close(file_id)
 
-    @assertEqual(data_in, data_out)
+    @assertEqual(expected_data, read_data)
   end subroutine test_write_2d
+
+  @test
+  subroutine test_write_scalar_character
+    character(len=*), parameter :: expected_data = "some words"
+    character(len=len(expected_data)) :: read_data
+    integer :: var_id
+
+    call neasyf_write(file_id, "data", values=expected_data)
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_varid(file_id, "data", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, read_data))
+    call neasyf_close(file_id)
+
+    @assertEqual(read_data, expected_data)
+
+  end subroutine test_write_scalar_character
 
 end module test_write

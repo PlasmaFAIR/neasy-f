@@ -13,11 +13,21 @@
 !> ```fortran
 !> ncid = neasyf_open("my_file.nc", "w")
 !>
+!> ! Write some metadata
+!> call neasyf_metadata(file_id, "neasy-f example", &
+!>                      "0.2.0", auto_date=.true.)
+!>
+!> ! Create dimensions
 !> call neasyf_dim(ncid, "x", unlimited=.true., x_dimid)
 !> call neasyf_dim(ncid, "y", dim_size=NY, y_dimid)
 !>
+!> ! Writing arrays requires the dimensions
 !> call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
 !>                   units="Pa", description="Pressure")
+!>
+!> ! Writing string scalars will automatically create a corresponding
+!> ! dimension of the correct length as the trimmed string
+!> call neasfy_write(ncid, "scalar_text", "Some text as a variable")
 !>
 !> call neasyf_close(ncid)
 !> ```
@@ -391,7 +401,7 @@ contains
   subroutine neasyf_write_scalar(parent_id, name, values, units, description, start)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_NOERR, NF90_ENOTVAR
+         NF90_NOERR, NF90_ENOTVAR, nf90_def_dim, NF90_CHAR
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -407,15 +417,23 @@ contains
 
     integer(nf_kind) :: nf_type
     integer :: status
-    integer :: var_id
+    integer :: var_id, dim_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, var_id)
-      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+      select type(values)
+      type is (character(len=*))
+        status = nf90_def_dim(parent_id, name // "_dim", len_trim(values), dim_id)
+        call neasyf_error(status, var=name, message="defining string dimension")
+
+        status = nf90_def_var(parent_id, name, NF90_CHAR, [dim_id], var_id)
+      class default
+        nf_type = neasyf_type(values)
+        ! TODO: check if nf_type indicates a derived type
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+        call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+      end select
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
