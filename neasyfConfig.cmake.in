@@ -11,8 +11,8 @@ endif()
 
 include(GKfunctions)
 
-if(EXISTS "@netCDFFortranx_ROOT@")
-  set(netCDFFortranx_ROOT "@netCDFFortranx_ROOT@")
+if(EXISTS "@netCDFFortran_ROOT@")
+  set(netCDFFortran_ROOT "@netCDFFortran_ROOT@")
 endif()
 
 find_dependency(netCDFFortran @netCDFFortran_VERSION@)
