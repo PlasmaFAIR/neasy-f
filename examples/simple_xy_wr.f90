@@ -26,7 +26,7 @@ program simple_xy_wr
   call neasyf_dim(ncid, "y", dim_size=NY, dimid=y_dimid)
 
   call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
-       units="Pa", description="Synthetic pressure")
+       units="Pa", long_name="Synthetic pressure")
 
   call neasyf_close(ncid)
 

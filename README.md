@@ -16,7 +16,7 @@ netCDF:
 
   call check( nf90_def_var(ncid, "data", NF90_INT, [y_dimid, x_dimid], varid)
   call check( nf90_put_att(ncid, varid, "units", "Pa") )
-  call check( nf90_put_att(ncid, varid, "description", "Synthetic pressure") )
+  call check( nf90_put_att(ncid, varid, "long_name", "Synthetic pressure") )
 
   call check( nf90_enddef(ncid) )
 
@@ -35,7 +35,7 @@ but using neasy-f:
   call neasyf_dim(ncid, "y", dim_size=NY, y_dimid)
 
   call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
-       units="Pa", description="Synthetic pressure")
+       units="Pa", long_name="Synthetic pressure")
 
   call neasyf_close(ncid)
 ```

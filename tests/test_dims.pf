@@ -141,13 +141,13 @@ contains
     integer :: dim_id, length
     character(len=nf90_max_name) :: unit_value, desc_value
 
-    call neasyf_dim(file_id, "dim1", [1, 2, 3], dimid=dim_id, units="T", description="test var")
+    call neasyf_dim(file_id, "dim1", [1, 2, 3], dimid=dim_id, units="T", long_name="test var")
     call neasyf_close(file_id)
 
     call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
     call neasyf_error(nf90_inq_varid(file_id, "dim1", dim_id))
     call neasyf_error(nf90_get_att(file_id, dim_id, "units", unit_value))
-    call neasyf_error(nf90_get_att(file_id, dim_id, "description", desc_value))
+    call neasyf_error(nf90_get_att(file_id, dim_id, "long_name", desc_value))
     call neasyf_error(nf90_close(file_id))
 
     @assertEqual(unit_value, "T")

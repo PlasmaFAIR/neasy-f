@@ -23,7 +23,7 @@
 !>
 !> ! Writing arrays requires the dimensions
 !> call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
-!>                   units="Pa", description="Pressure")
+!>                   units="Pa", long_name="Pressure")
 !>
 !> ! Writing string scalars will automatically create a corresponding
 !> ! dimension of the correct length as the trimmed string
@@ -717,12 +717,12 @@ contains
   !> optional argument [[unlimited]] can be used to make this dimension
   !> unlimited in extent.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   !>
   !> The netCDF IDs of the dimension and corresponding variable can be returned
   !> through [[dimid]] and [[varid]] respectively.
-  subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, description, unlimited)
+  subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, long_name, unlimited)
 
     use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_EBADDIM, NF90_ENOTVAR, NF90_UNLIMITED
@@ -740,8 +740,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
     !> Is this dimension unlimited?
     logical, optional, intent(in) :: unlimited
 
@@ -828,9 +828,9 @@ contains
 
     ! We could avoid the duplicated call here by copying the values into an allocatable class(*)
     if (present(values)) then
-      call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, description=description, varid=var_id)
+      call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
     else
-      call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, description=description, varid=var_id)
+      call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
     end if
 
     if (present(varid)) then
@@ -838,7 +838,7 @@ contains
     end if
   end subroutine neasyf_dim
 
-  subroutine neasyf_write_scalar(parent_id, name, values, units, description, start)
+  subroutine neasyf_write_scalar(parent_id, name, values, units, long_name, start)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR, nf90_def_dim, NF90_CHAR
@@ -850,8 +850,8 @@ contains
     class(*), intent(in) :: values
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     !> Insertion index (one-based). Note that this is an array with one element!
     integer, dimension(1), optional, intent(in) :: start
 
@@ -880,9 +880,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     else
       call neasyf_error(status, var=name, varid=var_id)
@@ -895,10 +895,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank1(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -913,8 +913,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(1), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -933,9 +933,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
@@ -955,10 +955,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank2(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -973,8 +973,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(2), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -993,9 +993,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
@@ -1015,10 +1015,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank3(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -1033,8 +1033,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(3), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -1053,9 +1053,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
@@ -1075,10 +1075,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank4(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -1093,8 +1093,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(4), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -1113,9 +1113,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
@@ -1135,10 +1135,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank5(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -1153,8 +1153,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(5), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -1173,9 +1173,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
@@ -1195,10 +1195,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank6(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -1213,8 +1213,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(6), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -1233,9 +1233,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
@@ -1255,10 +1255,10 @@ contains
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank7(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -1273,8 +1273,8 @@ contains
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension(7), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -1293,9 +1293,9 @@ contains
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls

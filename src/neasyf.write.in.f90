@@ -1,10 +1,10 @@
   !> Write a variable to a netCDF file or group, defining it if it isn't already
   !> defined in the dataset.
   !>
-  !> Optional arguments "unit" and "description" allow you to create attributes
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   subroutine neasyf_write_rank{n}(parent_id, name, values, dim_ids, varid, &
-       units, description, start, count, stride, map)
+       units, long_name, start, count, stride, map)
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_ENOTVAR
     !> Name of the variable
@@ -19,8 +19,8 @@
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
-    !> Long description of coordinate
-    character(len=*), optional, intent(in) :: description
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
     integer, dimension({n}), optional, intent(in) :: start, count, stride, map
 
     integer(nf_kind) :: nf_type
@@ -39,9 +39,9 @@
         call neasyf_error(status, var=name, varid=var_id, att="units")
       end if
 
-      if (present(description)) then
-        status = nf90_put_att(parent_id, var_id, "description", description)
-        call neasyf_error(status, var=name, varid=var_id, att="description")
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
     end if
     ! Something went wrong with one of the previous two calls
