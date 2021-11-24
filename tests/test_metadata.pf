@@ -34,20 +34,29 @@ contains
   subroutine test_write_metadata
     integer :: group_id
     integer :: n_vars
+    character(len=100) :: title, software_name, software_version, date_created, id
 
     call neasyf_metadata(file_id, &
+         title="Test neasyf", &
          software_name="test_neasyf", &
          software_version="v0.1.0", &
-         created="2021-11-18", &
+         date_created="2021-11-18", &
          file_id="0001")
     call neasyf_close(file_id)
     
     file_id = neasyf_open(temp_file, "r")
-    call neasyf_error(nf90_inq_ncid(file_id, "metadata", group_id))
-    call neasyf_error(nf90_inquire(group_id, nVariables=n_vars))
+    call neasyf_error(nf90_get_att(file_id, NF90_GLOBAL, "title", title))
+    call neasyf_error(nf90_get_att(file_id, NF90_GLOBAL, "software_name", software_name))
+    call neasyf_error(nf90_get_att(file_id, NF90_GLOBAL, "software_version", software_version))
+    call neasyf_error(nf90_get_att(file_id, NF90_GLOBAL, "date_created", date_created))
+    call neasyf_error(nf90_get_att(file_id, NF90_GLOBAL, "id", id))
     call neasyf_close(file_id)
 
-    @assertEqual(n_vars, 5)
+    @assertEqual(title, "Test neasyf")
+    @assertEqual(software_name, "test_neasyf")
+    @assertEqual(software_version, "v0.1.0")
+    @assertEqual(date_created, "2021-11-18")
+    @assertEqual(id, "0001")
     
   end subroutine test_write_metadata
 end module test_metadata

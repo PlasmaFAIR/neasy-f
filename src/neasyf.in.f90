@@ -147,43 +147,54 @@ contains
          // "Z" // zone(1:3) // ":" // zone(4:5)
   end function date_iso8601
 
-  !> Write some standard metadata to a "/metadata" group
-  subroutine neasyf_metadata(ncid, software_name, software_version, created, file_id, auto_date)
-    use netcdf, only: nf90_def_grp, nf90_inq_libvers
+  !> Write some standard metadata as global attributes
+  subroutine neasyf_metadata(ncid, title, software_name, software_version, date_created, file_id, auto_date)
+    use netcdf, only: nf90_inq_libvers, NF90_GLOBAL
     !> NetCDF file ID
     integer(nf_kind), intent(in) :: ncid
+    !> Description of the file
+    character(len=*), intent(in) :: title
     !> Name of the software creating this file
     character(len=*), intent(in) :: software_name
     !> Version of the software
     character(len=*), intent(in) :: software_version
     !> Date and time this file was created. Conflicts with `auto_date`
-    character(len=*), optional, intent(in) :: created
+    character(len=*), optional, intent(in) :: date_created
     !> Software-specific identifier for this file
     character(len=*), optional, intent(in) :: file_id
     !> If true, write 'created' with current time. Conflicts with `created`
     logical, optional, intent(in) :: auto_date
 
-    integer(nf_kind) :: group_id
+    integer(nf_kind) :: status
 
-    if (present(created) .and. present(auto_date)) then
+    if (present(date_created) .and. present(auto_date)) then
       error stop "neasyf_metadata: Both 'created' and 'auto_date' given; only one may be present"
     end if
 
-    call neasyf_error(nf90_def_grp(ncid, "metadata", group_id), &
-                      ncid=ncid, message="creating metadata group")
+    status = nf90_put_att(ncid, NF90_GLOBAL, "title", title)
+    call neasyf_error(status, ncid=ncid, att="title", message="setting global attribute")
 
-    call neasyf_write(group_id, "software_name", software_name)
-    call neasyf_write(group_id, "software_version", software_version)
-    call neasyf_write(group_id, "netcdf_version", trim(nf90_inq_libvers()))
-    if (present(created)) then
-      call neasyf_write(group_id, "created", created)
-    end if
+    status = nf90_put_att(ncid, NF90_GLOBAL, "software_name", software_name)
+    call neasyf_error(status, ncid=ncid, att="software_name", message="setting global attribute")
+
+    status = nf90_put_att(ncid, NF90_GLOBAL, "software_version", software_version)
+    call neasyf_error(status, ncid=ncid, att="software_version", message="setting global attribute")
+
+    status = nf90_put_att(ncid, NF90_GLOBAL, "netcdf_version", trim(nf90_inq_libvers()))
+    call neasyf_error(status, ncid=ncid, att="netcdf_version", message="setting global attribute")
+
     if (present(file_id)) then
-      call neasyf_write(group_id, "file_id", file_id)
+      status = nf90_put_att(ncid, NF90_GLOBAL, "id", file_id)
+      call neasyf_error(status, ncid=ncid, att="id", message="setting global attribute")
     end if
-    if (present(auto_date)) then
+
+    if (present(date_created)) then
+      status = nf90_put_att(ncid, NF90_GLOBAL, "date_created", date_created)
+      call neasyf_error(status, ncid=ncid, att="date_created", message="setting global attribute")
+    else if (present(auto_date)) then
       if (auto_date) then
-        call neasyf_write(group_id, "created", date_iso8601())
+        status = nf90_put_att(ncid, NF90_GLOBAL, "date_created", date_iso8601())
+        call neasyf_error(status, ncid=ncid, att="date_created", message="setting global attribute")
       end if
     end if
 
