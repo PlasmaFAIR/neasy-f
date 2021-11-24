@@ -2,8 +2,8 @@ neasy-f
 =======
 
 neasy-f is a short-and-sweet wrapper for netCDF-Fortran. Rather than attempting
-to be a feature-complete replacement, neasy-f wraps some common functions
-together and is opinionated about usage.
+to be a feature-complete replacement, neasy-f provides wrappers for some common
+operations, trying to keep simple things simple.
 
 For example, here's how you might write some two-dimensional data with plain
 netCDF:
@@ -61,8 +61,10 @@ replace your use of "plain" netCDF, or to swap out only a few.
 Requirements
 ------------
 
-neasy-f requires a Fortran 2008 compiler and netCDF-Fortran.
+neasy-f requires a Fortran 2008 compiler and netCDF-Fortran. neasy-f uses
+netCDF4 files, and so requires netCDF to have been built with HDF5.
 
+Tested with gfortran 11 and netCDF-Fortran 4.5.3.
 
 Compilation
 -----------
