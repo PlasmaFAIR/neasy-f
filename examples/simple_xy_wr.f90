@@ -10,7 +10,6 @@ program simple_xy_wr
   integer, parameter :: NDIMS = 2
   integer, parameter :: NX = 6, NY = 12
   integer :: ncid, varid
-  integer :: x_dimid, y_dimid
   integer :: data_out(NY, NX), data_in(NY, NX)
   integer :: x, y
 
@@ -22,10 +21,10 @@ program simple_xy_wr
 
   ncid = neasyf_open(FILE_NAME, "w")
 
-  call neasyf_dim(ncid, "x", dim_size=NX, dimid=x_dimid)
-  call neasyf_dim(ncid, "y", dim_size=NY, dimid=y_dimid)
+  call neasyf_dim(ncid, "x", dim_size=NX)
+  call neasyf_dim(ncid, "y", dim_size=NY)
 
-  call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
+  call neasyf_write(ncid, "data", data_out, dim_names=["y", "x"], &
        units="Pa", long_name="Synthetic pressure")
 
   call neasyf_close(ncid)

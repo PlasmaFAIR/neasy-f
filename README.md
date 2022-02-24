@@ -31,10 +31,10 @@ but using neasy-f:
 ```fortran
   ncid = neasyf_open("my_file.nc", "w")
 
-  call neasyf_dim(ncid, "x", dim_size=NX, x_dimid)
-  call neasyf_dim(ncid, "y", dim_size=NY, y_dimid)
+  call neasyf_dim(ncid, "x", dim_size=NX)
+  call neasyf_dim(ncid, "y", dim_size=NY)
 
-  call neasyf_write(ncid, "data", data_out, [y_dimid, x_dimid], &
+  call neasyf_write(ncid, "data", data_out, ["y", "x"], &
        units="Pa", long_name="Synthetic pressure")
 
   call neasyf_close(ncid)
@@ -53,6 +53,8 @@ There's a few differences for this simple example:
   the same call, so we don't need to switch between `nf90_create` and
   `nf90_open` calls
 - neasy-f always creates corresponding variables for the dimensions
+- neasy-f can check the dimensions from an array of strings, which means we
+  don't need to store the dimension IDs
 
 
 neasy-f is designed to be "mostly drop-in", meaning you can use it to entirely

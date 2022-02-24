@@ -3,10 +3,26 @@
   !>
   !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
-  subroutine neasyf_write_rank{n}(parent_id, name, values, dim_ids, varid, &
-       units, long_name, start, count, stride, map)
+  !>
+  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
+  !> doesn't already exist in the file.
+  !>
+  !> If you pass `dim_names`, then Fortran requires each element be the same
+  !> length. If you have dimension names of different lengths, you can simplify
+  !> passing this array by doing something like:
+  !>
+  !>     call neasyf_write(file_id, "var", data, dim_names=&
+  !>                       [character(len=len("longer_dim"))::&
+  !>                           "short", &
+  !>                           "longer_dim" &
+  !>                       ])
+  !>
+  !> which avoids the need to manually pad each dimension name with spaces.
+  subroutine neasyf_write_rank{n}(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start, count, stride, map)
+    use, intrinsic :: iso_fortran_env, only : error_unit
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_NOERR, NF90_ENOTVAR
+         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -14,7 +30,9 @@
     !> Value of the integer to write
     class(*), dimension({array(n)}), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension({n}), intent(in) :: dim_ids
+    integer, dimension({n}), optional, intent(in) :: dim_ids
+    !> Array of dimension names
+    character(len=*), dimension({n}), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
@@ -23,6 +41,8 @@
     character(len=*), optional, intent(in) :: long_name
     integer, dimension({n}), optional, intent(in) :: start, count, stride, map
 
+    integer, dimension({n}) :: local_dim_ids
+    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -30,9 +50,24 @@
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
+      if (.not. (present(dim_ids) .or. present(dim_names))) then
+        call neasyf_error(NF90_EDIMMETA, var=name, &
+             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
+      end if
+
+      ! Either use the passed in array of dimension IDs, or look them up from the array of names
+      if (present(dim_ids)) then
+        local_dim_ids = dim_ids
+      else
+        do dim_index = 1, {n}
+          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+        end do
+      end if
+
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, dim_ids, var_id)
+      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)

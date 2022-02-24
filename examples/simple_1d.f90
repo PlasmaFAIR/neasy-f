@@ -2,12 +2,12 @@ program example
   use neasyf
   implicit none
 
-  integer :: file_id, dim_id
+  integer :: file_id
   real, dimension(3) :: coord_array, data_array
 
   file_id = neasyf_open("example.nc", action="w")
-  call neasyf_dim(file_id, "coord", [1.0, 2.0, 3.0], units="m", dimid=dim_id)
-  call neasyf_write(file_id, "array", [88, 99, 110], dim_ids=[dim_id])
+  call neasyf_dim(file_id, "coord", [1.0, 2.0, 3.0], units="m")
+  call neasyf_write(file_id, "array", [88, 99, 110], dim_names=["coord"])
   call neasyf_metadata(file_id, &
        title="Example of neasy-f use", &
        software_name="neasy-f example", &
