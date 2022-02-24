@@ -148,16 +148,29 @@ contains
   end function date_iso8601
 
   !> Write some standard metadata as global attributes
+  !>
+  !> These are compatible with both the [netCDF attribute] and [CF
+  !> Metadata][cf] conventions. The following metadata are written:
+  !>
+  !> - title
+  !> - software_name
+  !> - software_version
+  !> - netcdf_version
+  !> - date_created
+  !> - id
+  !>
+  !> [netcdf]: https://docs.unidata.ucar.edu/netcdf-c/current/attribute_conventions.html
+  !> [cf]: https://cfconventions.org
   subroutine neasyf_metadata(ncid, title, software_name, software_version, date_created, file_id, auto_date)
-    use netcdf, only: nf90_inq_libvers, NF90_GLOBAL
+    use netcdf, only: nf90_put_att, nf90_inq_libvers, NF90_GLOBAL
     !> NetCDF file ID
     integer(nf_kind), intent(in) :: ncid
     !> Description of the file
-    character(len=*), intent(in) :: title
+    character(len=*), optional, intent(in) :: title
     !> Name of the software creating this file
-    character(len=*), intent(in) :: software_name
+    character(len=*), optional, intent(in) :: software_name
     !> Version of the software
-    character(len=*), intent(in) :: software_version
+    character(len=*), optional, intent(in) :: software_version
     !> Date and time this file was created. Conflicts with `auto_date`
     character(len=*), optional, intent(in) :: date_created
     !> Software-specific identifier for this file
@@ -171,14 +184,20 @@ contains
       error stop "neasyf_metadata: Both 'created' and 'auto_date' given; only one may be present"
     end if
 
-    status = nf90_put_att(ncid, NF90_GLOBAL, "title", title)
-    call neasyf_error(status, ncid=ncid, att="title", message="setting global attribute")
+    if (present(title)) then
+      status = nf90_put_att(ncid, NF90_GLOBAL, "title", title)
+      call neasyf_error(status, ncid=ncid, att="title", message="setting global attribute")
+    end if
 
-    status = nf90_put_att(ncid, NF90_GLOBAL, "software_name", software_name)
-    call neasyf_error(status, ncid=ncid, att="software_name", message="setting global attribute")
+    if (present(software_name)) then
+      status = nf90_put_att(ncid, NF90_GLOBAL, "software_name", software_name)
+      call neasyf_error(status, ncid=ncid, att="software_name", message="setting global attribute")
+    end if
 
-    status = nf90_put_att(ncid, NF90_GLOBAL, "software_version", software_version)
-    call neasyf_error(status, ncid=ncid, att="software_version", message="setting global attribute")
+    if (present(software_version)) then
+      status = nf90_put_att(ncid, NF90_GLOBAL, "software_version", software_version)
+      call neasyf_error(status, ncid=ncid, att="software_version", message="setting global attribute")
+    end if
 
     status = nf90_put_att(ncid, NF90_GLOBAL, "netcdf_version", trim(nf90_inq_libvers()))
     call neasyf_error(status, ncid=ncid, att="netcdf_version", message="setting global attribute")
