@@ -542,17 +542,18 @@ contains
     write (error_unit, '(2a)', advance='no') 'ERROR: ', trim (nf90_strerror (istatus))
 
     if (present(file)) &
-         write (error_unit, '(2a)', advance='no') ' in file ', trim (file)
+         write (error_unit, '(3a)', advance='no') ' in file "', trim (file), '"'
 
     if (present(dim)) &
-         write (error_unit, '(2a)', advance='no') ' in dimension ', trim (dim)
+         write (error_unit, '(3a)', advance='no') ' in dimension "', trim (dim), '"'
 
     if (present(var)) &
-         write (error_unit, '(2a)', advance='no') ' in variable ', trim (var)
+         write (error_unit, '(3a)', advance='no') ' in variable "', trim (var), '"'
 
     if (present(varid)) then
        if (.not. present(ncid)) then
-         error stop 'ERROR in neasyf_error: ncid missing while varid present in the argument'
+         if (present(file) .or. present(dim) .or. present(var)) write (error_unit, *)
+         error stop 'neasyf_error: ncid missing while varid present in the argument'
        end if
 
        if (present(att) ) then
