@@ -439,9 +439,9 @@ contains
     !> Value of the integer to write
     class(*), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(1), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(1), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
@@ -451,8 +451,8 @@ contains
 
     integer(nf_kind) :: nf_type
     integer :: status
-    integer :: var_id, dim_id
-    integer, dimension(1) :: local_dim_ids
+    integer :: var_id, dim_id, dim_index
+    integer, dimension(:), allocatable :: local_dim_ids
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
@@ -480,10 +480,13 @@ contains
           if (present(dim_ids)) then
             local_dim_ids = dim_ids
           else
-            status = nf90_inq_dimid(parent_id, trim(dim_names(1)), local_dim_ids(1))
-            call neasyf_error(status, var=name, dim=trim(dim_names(1)))
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
           end if
-          ! Create a 1D variable, although we're only going to write a single value
+          ! Create an N-D variable, although we're only going to write a single value
           status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
         else
           ! Create a scalar variable

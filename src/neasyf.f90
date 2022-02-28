@@ -879,9 +879,9 @@ contains
     !> Value of the integer to write
     class(*), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(1), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(1), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
@@ -891,8 +891,8 @@ contains
 
     integer(nf_kind) :: nf_type
     integer :: status
-    integer :: var_id, dim_id
-    integer, dimension(1) :: local_dim_ids
+    integer :: var_id, dim_id, dim_index
+    integer, dimension(:), allocatable :: local_dim_ids
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
@@ -920,10 +920,13 @@ contains
           if (present(dim_ids)) then
             local_dim_ids = dim_ids
           else
-            status = nf90_inq_dimid(parent_id, trim(dim_names(1)), local_dim_ids(1))
-            call neasyf_error(status, var=name, dim=trim(dim_names(1)))
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
           end if
-          ! Create a 1D variable, although we're only going to write a single value
+          ! Create an N-D variable, although we're only going to write a single value
           status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
         else
           ! Create a scalar variable
@@ -981,18 +984,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(1), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(1), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(1), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(1) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1010,7 +1013,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 1
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1019,6 +1023,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1076,18 +1081,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:, :), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(2), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(2), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(2), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(2) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1105,7 +1110,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 2
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1114,6 +1120,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1171,18 +1178,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:, :, :), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(3), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(3), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(3), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(3) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1200,7 +1207,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 3
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1209,6 +1217,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1266,18 +1275,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:, :, :, :), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(4), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(4), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(4), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(4) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1295,7 +1304,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 4
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1304,6 +1314,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1361,18 +1372,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:, :, :, :, :), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(5), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(5), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(5), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(5) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1390,7 +1401,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 5
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1399,6 +1411,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1456,18 +1469,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:, :, :, :, :, :), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(6), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(6), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(6), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(6) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1485,7 +1498,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 6
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1494,6 +1508,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1551,18 +1566,18 @@ contains
     !> Value of the integer to write
     class(*), dimension(:, :, :, :, :, :, :), intent(in) :: values
     !> Array of dimension IDs
-    integer, dimension(7), optional, intent(in) :: dim_ids
+    integer, dimension(:), optional, intent(in) :: dim_ids
     !> Array of dimension names
-    character(len=*), dimension(7), optional, intent(in) :: dim_names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    integer, dimension(7), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
 
-    integer, dimension(7) :: local_dim_ids
+    integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
@@ -1580,7 +1595,8 @@ contains
       if (present(dim_ids)) then
         local_dim_ids = dim_ids
       else
-        do dim_index = 1, 7
+        allocate(local_dim_ids(ubound(dim_names, 1)))
+        do dim_index = 1, ubound(dim_names, 1)
           status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
           call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
         end do
@@ -1589,6 +1605,7 @@ contains
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
       status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      deallocate(local_dim_ids)
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)

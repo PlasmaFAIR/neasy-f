@@ -107,6 +107,29 @@ contains
   end subroutine test_write_2d
 
   @test
+  subroutine test_write_2d_unlimited
+    integer, parameter :: nx = 5, nt = 3
+    integer :: i
+    real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
+    real, dimension(nx, nt) :: expected_data
+    integer :: x_dim_id, y_dim_id, var_id
+
+    call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
+    call neasyf_dim(file_id, "t", unlimited=.true.)
+    call neasyf_write(file_id, "data", read_data(:, 1), dim_names=["x", "t"], start=[1, 1])
+    call neasyf_write(file_id, "data", read_data(:, 2), dim_names=["x", "t"], start=[1, 2])
+    call neasyf_write(file_id, "data", read_data(:, 3), dim_names=["x", "t"], start=[1, 3])
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_varid(file_id, "data", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, expected_data))
+    call neasyf_close(file_id)
+
+    @assertEqual(expected_data, read_data)
+  end subroutine test_write_2d_unlimited
+
+  @test
   subroutine test_write_scalar_character
     character(len=*), parameter :: expected_data = "some words"
     character(len=len(expected_data)) :: read_data
