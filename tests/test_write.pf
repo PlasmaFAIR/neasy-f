@@ -31,6 +31,42 @@ contains
   end subroutine teardown
 
   @test
+  subroutine test_write_scalar
+    integer, parameter :: read_data = 5
+    integer :: expected_data
+    integer :: var_id
+
+    call neasyf_write(file_id, "data", read_data)
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_varid(file_id, "data", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, expected_data))
+    call neasyf_close(file_id)
+
+    @assertEqual(expected_data, read_data)
+  end subroutine test_write_scalar
+
+  @test
+  subroutine test_write_scalar_unlimited
+    integer, dimension(2), parameter :: read_data = [5, 6]
+    integer, dimension(2) :: expected_data
+    integer :: var_id
+
+    call neasyf_dim(file_id, "t", unlimited=.true.)
+    call neasyf_write(file_id, "t", read_data(1), dim_names=["t"], start=[1])
+    call neasyf_write(file_id, "t", read_data(2), dim_names=["t"], start=[2])
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_varid(file_id, "t", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, expected_data))
+    call neasyf_close(file_id)
+
+    @assertEqual(expected_data, read_data)
+  end subroutine test_write_scalar_unlimited
+
+  @test
   subroutine test_write_1d
     integer, parameter :: NX = 5
     real, dimension(NX), parameter :: read_data = [55.5, 44.4, 33.3, 22.2, 11.1]

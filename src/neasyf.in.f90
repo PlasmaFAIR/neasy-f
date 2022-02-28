@@ -428,16 +428,20 @@ contains
     end if
   end subroutine neasyf_dim
 
-  subroutine neasyf_write_scalar(parent_id, name, values, units, long_name, start)
+  subroutine neasyf_write_scalar(parent_id, name, values, dim_ids, dim_names, units, long_name, start)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_NOERR, NF90_ENOTVAR, nf90_def_dim, NF90_CHAR
+         NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
     class(*), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(1), optional, intent(in) :: dim_ids
+    !> Array of dimension names
+    character(len=*), dimension(1), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
@@ -448,6 +452,7 @@ contains
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id, dim_id
+    integer, dimension(1) :: local_dim_ids
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
@@ -459,11 +464,33 @@ contains
 
         status = nf90_def_var(parent_id, name, NF90_CHAR, [dim_id], var_id)
       class default
-        nf_type = neasyf_type(values)
         ! TODO: check if nf_type indicates a derived type
-        status = nf90_def_var(parent_id, name, nf_type, var_id)
-        call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+        nf_type = neasyf_type(values)
+
+        if (present(start)) then
+          ! If we've been passed `start`, then we must be writing into
+          ! a 1D array, in which case we need to know the associated
+          ! dimension in order to create the variable
+          if (.not. (present(dim_ids) .or. present(dim_names))) then
+            call neasyf_error(NF90_EDIMMETA, var=name, &
+                 message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+          end if
+
+          ! Either use the passed in array of dimension IDs, or look them up from the array of names
+          if (present(dim_ids)) then
+            local_dim_ids = dim_ids
+          else
+            status = nf90_inq_dimid(parent_id, trim(dim_names(1)), local_dim_ids(1))
+            call neasyf_error(status, var=name, dim=trim(dim_names(1)))
+          end if
+          ! Create a 1D variable, although we're only going to write a single value
+          status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+        else
+          ! Create a scalar variable
+          status = nf90_def_var(parent_id, name, nf_type, var_id)
+        end if
       end select
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
