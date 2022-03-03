@@ -129,6 +129,7 @@ contains
 
   !> Open a file, possibly creating it if it doesn't exist
   function neasyf_open(filename, action) result(ncid)
+    use, intrinsic :: iso_fortran_env, only : error_unit
     use netcdf, only : nf90_open, nf90_create, NF90_NOWRITE, NF90_NETCDF4, NF90_CLOBBER, NF90_WRITE
     !> Name of the file on disk
     character(len=*), intent(in) :: filename
@@ -151,7 +152,8 @@ contains
     case ('w')
       status = nf90_create(filename, ior(NF90_CLOBBER, NF90_NETCDF4), ncid)
     case default
-      error stop 'neasyf: Unsupported action ' // action
+      write(error_unit, '(3a)') "ERROR: neasyf: Unsupported action '" // action // "'"
+      error stop
     end select
     call neasyf_error(status, file=filename, ncid=ncid)
   end function neasyf_open
