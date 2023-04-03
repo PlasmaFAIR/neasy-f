@@ -68,6 +68,14 @@ netCDF4 files, and so requires netCDF to have been built with HDF5.
 
 Tested with gfortran 11 and netCDF-Fortran 4.5.3.
 
+Known Issues
+------------
+
+- gfortran has a bug when passing slices of arrays of derived types:
+  trying to write `some_array%member` will result in the wrong values
+  getting written. To workaround this, copy `some_array%member` into a
+  temporary variable and pass that to `neasyf_write`
+
 Compilation
 -----------
 
