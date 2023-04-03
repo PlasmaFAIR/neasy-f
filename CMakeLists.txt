@@ -73,6 +73,16 @@ neasy-f, then disable source generation with NEASYF_GENERATE_SOURCE=off.")
     )
 endif()
 
+# Add some extra flags when compiling in debug mode
+target_compile_options(neasyf PRIVATE
+  $<$<CONFIG:Debug>:
+    $<$<Fortran_COMPILER_ID:GNU>:
+      -g -Wall -fimplicit-none -fbounds-check >
+    $<$<Fortran_COMPILER_ID:Intel>:
+      -g -implicitnone -warn all -nogen-interfaces -CB -traceback >
+    >
+  )
+
 ##################################################
 # Dependencies
 
