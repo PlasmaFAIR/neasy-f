@@ -323,7 +323,7 @@ contains
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Coordinate values
-    class(*), dimension(:), optional, intent(in) :: values
+    class(*), dimension(:), optional, target, intent(in) :: values
     !> Size of the dimension if values isn't specified
     integer, optional, intent(in) :: dim_size
     !> NetCDF ID of the dimension
@@ -341,7 +341,7 @@ contains
     integer(nf_kind) :: dim_id, var_id
     integer :: i
     integer :: local_size
-    integer, dimension(:), allocatable :: local_values
+    class(*), dimension(:), pointer :: local_values
     logical :: local_unlimited
 
     if (present(values) .and. present(dim_size)) then
@@ -380,9 +380,10 @@ contains
     ! initial size of the dimension
     if (present(values)) then
       local_size = size(values)
+      local_values => values
     else if (present(dim_size)) then
       local_size = dim_size
-      local_values = [(i, i=1, dim_size)]
+      allocate(local_values, source=[(i, i=1, dim_size)])
     end if
 
     ! Setting the dimension to be unlimited overrides the size
@@ -419,16 +420,15 @@ contains
       return
     end if
 
-    ! We could avoid the duplicated call here by copying the values into an allocatable class(*)
-    if (present(values)) then
-      call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
-    else
-      call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
-    end if
+    call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
 
     if (present(varid)) then
       varid = var_id
     end if
+
+    ! If we allocated local_values, best free the memory. Note that
+    ! `allocated(local_values)` doesn't work here, because Fortran.
+    if (.not. present(values) .and. present(dim_size)) deallocate(local_values)
   end subroutine neasyf_dim
 
   subroutine neasyf_write_scalar(parent_id, name, values, dim_ids, dim_names, units, long_name, start)
