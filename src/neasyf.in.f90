@@ -337,7 +337,6 @@ contains
     !> Is this dimension unlimited?
     logical, optional, intent(in) :: unlimited
 
-    integer(nf_kind) :: nf_type
     integer :: status
     integer(nf_kind) :: dim_id, var_id
     integer :: i
@@ -381,12 +380,9 @@ contains
     ! initial size of the dimension
     if (present(values)) then
       local_size = size(values)
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
     else if (present(dim_size)) then
       local_size = dim_size
       local_values = [(i, i=1, dim_size)]
-      nf_type = neasyf_type(local_values)
     end if
 
     ! Setting the dimension to be unlimited overrides the size
@@ -400,6 +396,11 @@ contains
     if (local_size < 0) then
       error stop "neasyf_dim: Dimension does not exist, and initial size not set. &
            &Either pass one of 'values' or 'dim_size', or set 'unlimited=.true.'"
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
     end if
 
     status = nf90_def_dim(parent_id, name, local_size, dim_id)
