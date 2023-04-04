@@ -280,43 +280,57 @@ contains
   function neasyf_type_rank1(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:), intent(in) :: variable
-    nf_type = neasyf_type(variable(1))
+    class(*), dimension(:), allocatable :: local
+    allocate(local(1), mold=variable)
+    nf_type = neasyf_type(local(1))
   end function neasyf_type_rank1
 
   function neasyf_type_rank2(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :), intent(in) :: variable
-    nf_type = neasyf_type(variable(1, 1))
+    class(*), dimension(:, :), allocatable :: local
+    allocate(local(1, 1), mold=variable)
+    nf_type = neasyf_type(local(1, 1))
   end function neasyf_type_rank2
 
   function neasyf_type_rank3(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :), intent(in) :: variable
-    nf_type = neasyf_type(variable(1, 1, 1))
+    class(*), dimension(:, :, :), allocatable :: local
+    allocate(local(1, 1, 1), mold=variable)
+    nf_type = neasyf_type(local(1, 1, 1))
   end function neasyf_type_rank3
 
   function neasyf_type_rank4(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :), intent(in) :: variable
-    nf_type = neasyf_type(variable(1, 1, 1, 1))
+    class(*), dimension(:, :, :, :), allocatable :: local
+    allocate(local(1, 1, 1, 1), mold=variable)
+    nf_type = neasyf_type(local(1, 1, 1, 1))
   end function neasyf_type_rank4
 
   function neasyf_type_rank5(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :, :), intent(in) :: variable
-    nf_type = neasyf_type(variable(1, 1, 1, 1, 1))
+    class(*), dimension(:, :, :, :, :), allocatable :: local
+    allocate(local(1, 1, 1, 1, 1), mold=variable)
+    nf_type = neasyf_type(local(1, 1, 1, 1, 1))
   end function neasyf_type_rank5
 
   function neasyf_type_rank6(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :, :, :), intent(in) :: variable
-    nf_type = neasyf_type(variable(1, 1, 1, 1, 1, 1))
+    class(*), dimension(:, :, :, :, :, :), allocatable :: local
+    allocate(local(1, 1, 1, 1, 1, 1), mold=variable)
+    nf_type = neasyf_type(local(1, 1, 1, 1, 1, 1))
   end function neasyf_type_rank6
 
   function neasyf_type_rank7(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :, :, :, :), intent(in) :: variable
-    nf_type = neasyf_type(variable(1, 1, 1, 1, 1, 1, 1))
+    class(*), dimension(:, :, :, :, :, :, :), allocatable :: local
+    allocate(local(1, 1, 1, 1, 1, 1, 1), mold=variable)
+    nf_type = neasyf_type(local(1, 1, 1, 1, 1, 1, 1))
   end function neasyf_type_rank7
 
 
