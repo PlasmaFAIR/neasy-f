@@ -771,15 +771,15 @@ contains
   !> Create a dimension if it doesn't already exist.
   !>
   !> If the dimension doesn't exist, also create a variable of the same name and
-  !> fill it with [[values]], or the integers in the range `1..dim_size`. The
-  !> optional argument [[unlimited]] can be used to make this dimension
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
   !> unlimited in extent.
   !>
   !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   !>
   !> The netCDF IDs of the dimension and corresponding variable can be returned
-  !> through [[dimid]] and [[varid]] respectively.
+  !> through `dimid` and `varid` respectively.
   subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, long_name, unlimited)
 
     use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
