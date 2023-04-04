@@ -67,6 +67,18 @@ module neasyf
   private
   public :: neasyf_open, neasyf_close, neasyf_type, neasyf_dim
   public :: neasyf_write, neasyf_read, neasyf_error, neasyf_metadata
+  public :: neasyf_default_compression
+
+  !> Default compression level to use when creating variables. The default is
+  !> zero, no compression. Non-zero values should be between 1-9
+  !>
+  !> This can be overridden explicitly in calls to [[neasyf_write]].
+  !>
+  !> Setting this to a non-zero value also enables the `shuffle` filter. There
+  !> is some discussion of how compression works in netCDF in the [documentation
+  !> for the C
+  !> library](https://docs.unidata.ucar.edu/netcdf-c/current/group__variables.html#ga59dad3301f241a7eb86f31b339af2d26)
+  integer :: neasyf_default_compression = 0
 
   integer, parameter :: nf_kind = kind(NF90_INT)
 
