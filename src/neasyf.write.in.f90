@@ -19,7 +19,7 @@
   !>
   !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank{n}(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map)
+       varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
@@ -40,12 +40,19 @@
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
     integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
+    integer :: local_compression
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
@@ -66,9 +73,15 @@
         end do
       end if
 
+      local_compression = neasyf_default_compression
+      if (present(compression)) then
+        local_compression = compression
+      end if
+
       nf_type = neasyf_type(values)
       ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+           shuffle=(local_compression > 0), deflate_level=local_compression)
       deallocate(local_dim_ids)
 
       if (present(units)) then
