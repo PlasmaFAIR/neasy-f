@@ -24,7 +24,7 @@ jobs:
           cat /etc/*release
           gfortran --version
           nf-config --all
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
 
       - name: Build neasy-f
         run: ./scripts/ci_build_and_run.sh
