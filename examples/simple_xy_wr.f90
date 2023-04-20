@@ -7,9 +7,8 @@ program simple_xy_wr
 
   character (len = *), parameter :: FILE_NAME = "simple_xy_nc4.nc"
   character (len = *), parameter :: VAR_NAME = "data"
-  integer, parameter :: NDIMS = 2
   integer, parameter :: NX = 6, NY = 12
-  integer :: ncid, varid
+  integer :: ncid
   integer :: data_out(NY, NX), data_in(NY, NX)
   integer :: x, y
 

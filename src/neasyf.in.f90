@@ -329,7 +329,7 @@ contains
   subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, long_name, unlimited)
 
     use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
-         NF90_NOERR, NF90_EBADDIM, NF90_ENOTVAR, NF90_UNLIMITED
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -446,7 +446,7 @@ contains
   subroutine neasyf_write_scalar(parent_id, name, values, dim_ids, dim_names, units, long_name, start)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -530,7 +530,7 @@ contains
 {neasyf_write_rank}
 
   subroutine neasyf_read_scalar(parent_id, name, values)
-    use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable

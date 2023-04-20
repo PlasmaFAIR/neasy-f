@@ -1,6 +1,6 @@
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
   subroutine neasyf_read_rank{n}(parent_id, name, values)
-    use netcdf, only : nf90_max_name, nf90_inq_varid, nf90_inquire_variable
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
