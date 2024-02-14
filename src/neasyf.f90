@@ -93,6 +93,26 @@ module neasyf
     module procedure neasyf_type_rank7
   end interface neasyf_type
 
+  !> Write a variable to a netCDF file or group, defining it if it isn't already
+  !> defined in the dataset.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
+  !> doesn't already exist in the file.
+  !>
+  !> If you pass `dim_names`, then Fortran requires each element be the same
+  !> length. If you have dimension names of different lengths, you can simplify
+  !> passing this array by doing something like:
+  !>
+  !>     call neasyf_write(file_id, "var", data, dim_names=&
+  !>                       [character(len=len("longer_dim"))::&
+  !>                           "short", &
+  !>                           "longer_dim" &
+  !>                       ])
+  !>
+  !> which avoids the need to manually pad each dimension name with spaces.
   interface neasyf_write
     module procedure neasyf_write_scalar
     module procedure neasyf_write_rank1
@@ -104,6 +124,7 @@ module neasyf
     module procedure neasyf_write_rank7
   end interface neasyf_write
 
+  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
   interface neasyf_read
     module procedure neasyf_read_scalar
     module procedure neasyf_read_rank1
@@ -115,6 +136,8 @@ module neasyf
     module procedure neasyf_read_rank7
   end interface neasyf_read
 
+  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
+  !> All arguments have the same meanings as `nf90_put_var`.
   interface polymorphic_put_var
     module procedure polymorphic_put_var_scalar
     module procedure polymorphic_put_var_rank1
@@ -126,6 +149,8 @@ module neasyf
     module procedure polymorphic_put_var_rank7
   end interface polymorphic_put_var
 
+  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
+  !> All arguments have the same meanings as `nf90_get_var`.
   interface polymorphic_get_var
     module procedure polymorphic_get_var_scalar
     module procedure polymorphic_get_var_rank1
@@ -371,8 +396,6 @@ contains
     end select
   end function polymorphic_put_var_scalar
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank1(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -398,8 +421,6 @@ contains
     end select
   end function polymorphic_put_var_rank1
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank2(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -425,8 +446,6 @@ contains
     end select
   end function polymorphic_put_var_rank2
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank3(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -452,8 +471,6 @@ contains
     end select
   end function polymorphic_put_var_rank3
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank4(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -479,8 +496,6 @@ contains
     end select
   end function polymorphic_put_var_rank4
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank5(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -506,8 +521,6 @@ contains
     end select
   end function polymorphic_put_var_rank5
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank6(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -533,8 +546,6 @@ contains
     end select
   end function polymorphic_put_var_rank6
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank7(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE
@@ -585,8 +596,6 @@ contains
     end select
   end function polymorphic_get_var_scalar
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank1(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -611,8 +620,6 @@ contains
     end select
   end function polymorphic_get_var_rank1
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank2(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -637,8 +644,6 @@ contains
     end select
   end function polymorphic_get_var_rank2
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank3(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -663,8 +668,6 @@ contains
     end select
   end function polymorphic_get_var_rank3
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank4(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -689,8 +692,6 @@ contains
     end select
   end function polymorphic_get_var_rank4
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank5(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -715,8 +716,6 @@ contains
     end select
   end function polymorphic_get_var_rank5
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank6(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -741,8 +740,6 @@ contains
     end select
   end function polymorphic_get_var_rank6
 
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank7(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
@@ -981,26 +978,6 @@ contains
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
   end subroutine neasyf_write_scalar
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank1(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
@@ -1091,26 +1068,6 @@ contains
     end if
   end subroutine neasyf_write_rank1
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank2(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
@@ -1201,26 +1158,6 @@ contains
     end if
   end subroutine neasyf_write_rank2
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank3(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
@@ -1311,26 +1248,6 @@ contains
     end if
   end subroutine neasyf_write_rank3
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank4(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
@@ -1421,26 +1338,6 @@ contains
     end if
   end subroutine neasyf_write_rank4
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank5(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
@@ -1531,26 +1428,6 @@ contains
     end if
   end subroutine neasyf_write_rank5
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank6(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit
@@ -1641,26 +1518,6 @@ contains
     end if
   end subroutine neasyf_write_rank6
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank7(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit

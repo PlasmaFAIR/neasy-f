@@ -1,23 +1,3 @@
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
   subroutine neasyf_write_rank{n}(parent_id, name, values, dim_ids, dim_names, &
        varid, units, long_name, start, count, stride, map, compression)
     use, intrinsic :: iso_fortran_env, only : error_unit

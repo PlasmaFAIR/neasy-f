@@ -1,5 +1,3 @@
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
   function polymorphic_put_var_rank{n}(ncid, varid, values, start, count, stride, map) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_put_var, NF90_EBADTYPE

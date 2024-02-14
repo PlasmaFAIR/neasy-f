@@ -87,21 +87,46 @@ module neasyf
 {mod_proc_neasyf_type_rank}
   end interface neasyf_type
 
+  !> Write a variable to a netCDF file or group, defining it if it isn't already
+  !> defined in the dataset.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
+  !> doesn't already exist in the file.
+  !>
+  !> If you pass `dim_names`, then Fortran requires each element be the same
+  !> length. If you have dimension names of different lengths, you can simplify
+  !> passing this array by doing something like:
+  !>
+  !>     call neasyf_write(file_id, "var", data, dim_names=&
+  !>                       [character(len=len("longer_dim"))::&
+  !>                           "short", &
+  !>                           "longer_dim" &
+  !>                       ])
+  !>
+  !> which avoids the need to manually pad each dimension name with spaces.
   interface neasyf_write
     module procedure neasyf_write_scalar
 {mod_proc_neasyf_write_rank}
   end interface neasyf_write
 
+  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
   interface neasyf_read
     module procedure neasyf_read_scalar
 {mod_proc_neasyf_read_rank}
   end interface neasyf_read
 
+  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
+  !> All arguments have the same meanings as `nf90_put_var`.
   interface polymorphic_put_var
     module procedure polymorphic_put_var_scalar
 {mod_proc_polymorphic_put_var_rank}
   end interface polymorphic_put_var
 
+  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
+  !> All arguments have the same meanings as `nf90_get_var`.
   interface polymorphic_get_var
     module procedure polymorphic_get_var_scalar
 {mod_proc_polymorphic_get_var_rank}

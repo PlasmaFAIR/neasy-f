@@ -1,5 +1,3 @@
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
   function polymorphic_get_var_rank{n}(ncid, varid, values) result(status)
     use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : nf90_get_var, NF90_EBADTYPE
