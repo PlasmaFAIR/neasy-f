@@ -61,6 +61,7 @@
 !> `*.in.f90` files and run the `generate_source.py` script -- or just rebuild
 !> the library using CMake.
 module neasyf
+  use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
   use netcdf, only : NF90_INT
   implicit none
 
@@ -82,9 +83,26 @@ module neasyf
 
   integer, parameter :: nf_kind = kind(NF90_INT)
 
+#:def dimension(RANK)
+$:"" if RANK == 0 else f", dimension({', '.join([':'] * RANK)})"
+#:enddef dimension
+
+#:def clean(TYPE_NAME)
+$:"character" if TYPE_NAME.startswith("character") else TYPE_NAME.replace("(", "_").replace(")", "")
+#:enddef clean
+
+#:def slice(RANK)
+$:", ".join(["1"] * RANK)
+#:enddef slice
+
+#:set RANKS = range(0, 8)
+#:set TYPE_NAMES = ["integer(int8)", "integer(int16)", "integer(int32)", "real(real32)", "real(real64)", "character(len=*)"]
+
   interface neasyf_type
     module procedure neasyf_type_scalar
-{mod_proc_neasyf_type_rank}
+  #:for RANK in RANKS[1:]
+    module procedure neasyf_type_rank_${RANK}$
+  #:endfor
   end interface neasyf_type
 
   !> Write a variable to a netCDF file or group, defining it if it isn't already
@@ -108,29 +126,40 @@ module neasyf
   !>
   !> which avoids the need to manually pad each dimension name with spaces.
   interface neasyf_write
-    module procedure neasyf_write_scalar
-{mod_proc_neasyf_write_rank}
+#:for TYPE_NAME in TYPE_NAMES
+  #:for RANK in RANKS
+    module procedure neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$
+  #:endfor
+#:endfor
   end interface neasyf_write
 
   !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
   interface neasyf_read
-    module procedure neasyf_read_scalar
-{mod_proc_neasyf_read_rank}
+#:for TYPE_NAME in TYPE_NAMES
+  #:for RANK in RANKS
+    module procedure neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$
+  #:endfor
+#:endfor
   end interface neasyf_read
 
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  interface polymorphic_put_var
-    module procedure polymorphic_put_var_scalar
-{mod_proc_polymorphic_put_var_rank}
-  end interface polymorphic_put_var
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  interface polymorphic_get_var
-    module procedure polymorphic_get_var_scalar
-{mod_proc_polymorphic_get_var_rank}
-  end interface polymorphic_get_var
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  interface neasyf_dim
+    module procedure neasyf_dim_index
+#:for TYPE_NAME in TYPE_NAMES
+    module procedure neasyf_dim_${clean(TYPE_NAME)}$
+#:endfor
+  end interface neasyf_dim
 
 contains
 
@@ -260,7 +289,6 @@ contains
 
   !> Return the corresponding netCDF type for [[variable]]
   function neasyf_type_scalar(variable) result(nf_type)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : NF90_BYTE, NF90_CHAR, NF90_SHORT, NF90_INT, NF90_REAL, NF90_DOUBLE
     integer(nf_kind) :: nf_type
     class(*), intent(in) :: variable
@@ -284,83 +312,35 @@ contains
     end select
   end function neasyf_type_scalar
 
-{neasyf_type_rank}
+#:for RANK in RANKS[1:]
+  function neasyf_type_rank_${RANK}$(variable) result(nf_type)
+    integer(nf_kind) :: nf_type
+    class(*)${dimension(RANK)}$, intent(in) :: variable
+    class(*)${dimension(RANK)}$, allocatable :: local
+    allocate(local(${slice(RANK)}$), mold=variable)
+    nf_type = neasyf_type(local(${slice(RANK)}$))
+  end function neasyf_type_rank_${RANK}$
 
-  function polymorphic_put_var_scalar(ncid, varid, values, start) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start
-    integer :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_scalar
-
-{polymorphic_put_var_rank}
-
-  function polymorphic_get_var_scalar(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_scalar
-
-{polymorphic_get_var_rank}
+#:endfor
 
   !> Create a dimension if it doesn't already exist.
   !>
   !> If the dimension doesn't exist, also create a variable of the same name and
-  !> fill it with `values`, or the integers in the range `1..dim_size`. The
-  !> optional argument `unlimited` can be used to make this dimension
-  !> unlimited in extent.
+  !> fill it with the integers in the range `1..dim_size`. The optional argument
+  !> `unlimited` can be used to make this dimension unlimited in extent.
   !>
   !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   !>
   !> The netCDF IDs of the dimension and corresponding variable can be returned
   !> through `dimid` and `varid` respectively.
-  subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, long_name, unlimited)
-
+  subroutine neasyf_dim_index(parent_id, name, dim_size, dimid, varid, units, long_name, unlimited)
     use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
-    !> Coordinate values
-    class(*), dimension(:), optional, target, intent(in) :: values
     !> Size of the dimension if values isn't specified
     integer, optional, intent(in) :: dim_size
     !> NetCDF ID of the dimension
@@ -374,16 +354,11 @@ contains
     !> Is this dimension unlimited?
     logical, optional, intent(in) :: unlimited
 
-    integer :: status
+    integer:: status
     integer(nf_kind) :: dim_id, var_id
     integer :: i
     integer :: local_size
-    class(*), dimension(:), pointer :: local_values
     logical :: local_unlimited
-
-    if (present(values) .and. present(dim_size)) then
-      error stop "neasyf_dim: Both 'values' and 'dim_size' given. Only one must be present"
-    end if
 
     status = nf90_inq_dimid(parent_id, name, dim_id)
     if (status == NF90_NOERR) then
@@ -404,7 +379,7 @@ contains
       call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
     end if
 
-    if (.not. (present(values) .or. present(dim_size) .or. present(unlimited))) then
+    if (.not. (present(dim_size) .or. present(unlimited))) then
       error stop "neasyf_dim: Dimension does not exist and none of 'values', 'dim_size', or 'unlimited' given. &
            &Exactly one must be present"
     end if
@@ -415,15 +390,12 @@ contains
 
     ! Dimension doesn't exist, so let's create it. First we need to get the
     ! initial size of the dimension
-    if (present(values)) then
-      local_size = size(values)
-      local_values => values
-    else if (present(dim_size)) then
+    if (present(dim_size)) then
       local_size = dim_size
-      allocate(local_values, source=[(i, i=1, dim_size)])
     end if
 
     ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
     if (present(unlimited)) then
       local_unlimited = unlimited
       if (unlimited) then
@@ -433,7 +405,7 @@ contains
 
     if (local_size < 0) then
       error stop "neasyf_dim: Dimension does not exist, and initial size not set. &
-           &Either pass one of 'values' or 'dim_size', or set 'unlimited=.true.'"
+           &Either pass 'dim_size', or set 'unlimited=.true.'"
     end if
 
     if (local_size == 0 .and. .not. local_unlimited) then
@@ -449,7 +421,7 @@ contains
     end if
 
     ! For unlimited dimensions, if no initial size or values provided, we're done
-    if (local_unlimited .and. .not. (present(values) .or. present(dim_size))) then
+    if (local_unlimited .and. .not. (present(dim_size))) then
       if (present(varid)) then
         error stop "neasyf_dim: Deferring variable creation, but 'varid' passed and would be given an invalid value. &
              &Please remove 'varid' or pass one of 'values' or 'dim_size'"
@@ -457,19 +429,115 @@ contains
       return
     end if
 
-    call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+    call neasyf_write(parent_id, name, [integer(int32)::(i, i=1, local_size)], dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
 
     if (present(varid)) then
       varid = var_id
     end if
+  end subroutine neasyf_dim_index
 
-    ! If we allocated local_values, best free the memory. Note that
-    ! `allocated(local_values)` doesn't work here, because Fortran.
-    if (.not. present(values) .and. present(dim_size)) deallocate(local_values)
-  end subroutine neasyf_dim
+#:for TYPE_NAME in TYPE_NAMES
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_${clean(TYPE_NAME)}$(parent_id, name, values, dimid, varid, units, long_name, unlimited)
 
-  subroutine neasyf_write_scalar(parent_id, name, values, dim_ids, dim_names, units, long_name, start)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(${TYPE_NAME}$), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_${clean(TYPE_NAME)}$
+
+#:endfor
+
+#:for TYPE_NAME in TYPE_NAMES
+#:  for RANK in RANKS
+  subroutine neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+#:if RANK > 0
+       , count, stride, map, compression &
+#:endif
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
@@ -477,62 +545,98 @@ contains
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), intent(in) :: values
+    type(${TYPE_NAME}$)${dimension(RANK)}$, intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
     !> Array of dimension names
     character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    !> Insertion index (one-based). Note that this is an array with one element!
-    integer, dimension(1), optional, intent(in) :: start
+    !> These are the same as the standard netCDF arguments
+#:if RANK == 0
+    integer, dimension(:), optional, intent(in) :: start
+#:else
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+#:endif
 
+    integer, dimension(:), allocatable :: local_dim_ids
     integer(nf_kind) :: nf_type
     integer :: status
-    integer :: var_id, dim_id, dim_index
-    integer, dimension(:), allocatable :: local_dim_ids
+    integer :: var_id
+    integer :: local_compression
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      select type(values)
-      type is (character(len=*))
-        status = nf90_def_dim(parent_id, name // "_dim", len_trim(values), dim_id)
-        call neasyf_error(status, var=name, message="defining string dimension")
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
-        status = nf90_def_var(parent_id, name, NF90_CHAR, [dim_id], var_id)
-      class default
-        ! TODO: check if nf_type indicates a derived type
-        nf_type = neasyf_type(values)
+      local_compression = neasyf_default_compression
 
-        if (present(start)) then
-          ! If we've been passed `start`, then we must be writing into
-          ! a 1D array, in which case we need to know the associated
-          ! dimension in order to create the variable
-          if (.not. (present(dim_ids) .or. present(dim_names))) then
-            call neasyf_error(NF90_EDIMMETA, var=name, &
-                 message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
-          end if
+#:if RANK == 0 and TYPE_NAME.startswith("character")
+      ! Silence unused variable warning for this particular type/rank combo
+      if (present(dim_names)) then; end if
 
-          ! Either use the passed in array of dimension IDs, or look them up from the array of names
-          if (present(dim_ids)) then
-            local_dim_ids = dim_ids
-          else
+      if (present(dim_ids)) then
+        local_dim_ids = dim_ids
+      else
+        block
+          integer :: dim_id
+          status = nf90_def_dim(parent_id, name // "_dim", len_trim(values), dim_id)
+          call neasyf_error(status, var=name, message="defining string dimension")
+          local_dim_ids = [dim_id]
+        end block
+      end if
+      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+#:else
+#:  if RANK == 0
+      if (present(start)) then
+#:  else
+        if (present(compression)) then
+          local_compression = compression
+        end if
+#:  endif
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
             allocate(local_dim_ids(ubound(dim_names, 1)))
             do dim_index = 1, ubound(dim_names, 1)
               status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
               call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
             end do
-          end if
-          ! Create an N-D variable, although we're only going to write a single value
-          status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
-        else
-          ! Create a scalar variable
-          status = nf90_def_var(parent_id, name, nf_type, var_id)
+          end block
         end if
-      end select
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+#:  if RANK == 0
+      else
+        ! Create a scalar variable
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+      end if
+#:  endif
+#:endif
       call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
@@ -548,35 +652,41 @@ contains
       call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start=start)
+#:if RANK == 0
+    status = nf90_put_var(parent_id, var_id, values, start)
+#:else
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+#:endif
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-  end subroutine neasyf_write_scalar
 
-{neasyf_write_rank}
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$
 
-  subroutine neasyf_read_scalar(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), intent(out) :: values
-
-    integer :: status
+    type(${TYPE_NAME}$)${dimension(RANK)}$, intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_scalar
+  end subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$
 
-{neasyf_read_rank}
+#:  endfor
+#:endfor
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`
   !>
