@@ -164,7 +164,7 @@ $:", ".join(["1"] * RANK)
 contains
 
   !> Open a file, possibly creating it if it doesn't exist
-  function neasyf_open(filename, action) result(ncid)
+  function neasyf_open(filename, action, comm, info) result(ncid)
     use, intrinsic :: iso_fortran_env, only : error_unit
     use netcdf, only : nf90_open, nf90_create, NF90_NOWRITE, NF90_NETCDF4, NF90_CLOBBER, NF90_WRITE
     !> Name of the file on disk
@@ -177,16 +177,18 @@ contains
     !>
     !> @todo Handle 'rw' for files that may or may not already exist
     character(len=*), intent(in) :: action
+    !> MPI communicator and info
+    integer, optional, intent(in) :: comm, info
     integer(nf_kind) :: ncid
     integer :: status
 
     select case (action)
     case ('r')
-      status = nf90_open(filename, NF90_NOWRITE, ncid)
+      status = nf90_open(filename, NF90_NOWRITE, ncid, comm=comm, info=info)
     case ('rw')
-      status = nf90_open(filename, ior(NF90_WRITE, NF90_NETCDF4), ncid)
+      status = nf90_open(filename, ior(NF90_WRITE, NF90_NETCDF4), ncid, comm=comm, info=info)
     case ('w')
-      status = nf90_create(filename, ior(NF90_CLOBBER, NF90_NETCDF4), ncid)
+      status = nf90_create(filename, ior(NF90_CLOBBER, NF90_NETCDF4), ncid, comm=comm, info=info)
     case default
       write(error_unit, '(3a)') "ERROR: neasyf: Unsupported action '" // action // "'"
       error stop
