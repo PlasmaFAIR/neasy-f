@@ -68,6 +68,9 @@ netCDF4 files, and so requires netCDF to have been built with HDF5.
 
 Tested with gfortran 11 and netCDF-Fortran 4.5.3.
 
+For developers,
+[fypp](https://fypp.readthedocs.io/en/stable/index.html) is also required.
+
 Known Issues
 ------------
 
@@ -145,27 +148,21 @@ target_link_libraries(<your target> PRIVATE neasyf::neasyf)
 Implementation
 --------------
 
-To simplify a lot of the code, neasy-f uses unlimited polymorphism (`class(*)`)
-for a few dummy/input variables. This means that instead of needing to write
-separate implementations for `integer, real, character`, and their different
-`kind`s, _as well as_ handling scalar and array arguments, we only need to
-overload on the array rank. This possibly has a slight runtime overhead, as
-we've shifted from compile-time dispatch to runtime, but this is should be small
-compared to reading from/writing to disk.
-
 NetCDF supports up to 7 dimensions. Most of neasy-f's implementation is agnostic
-to the dimension, with some slight differences between the scalar and
-n-dimensional overloads. The result is that there is a _lot_ of repeated code in
-neasy-f. To handle this, there is a short Python script to generate the 1-7D
-overloads of the neasy-f functions.
+to the type, kind, and dimension, with some slight differences between the
+scalar and n-dimensional overloads. The result is that there is a _lot_ of
+repeated code in neasy-f. To handle this, we use the fypp preprocessor to
+generate the (6 types/kinds times 8 rank) overloads of the neasy-f functions.
 
-The various `*.in.f90` files hold the "real" implementations, and
-`src/generate_source.py` generates the code and spits it out. To update the main
-code, run:
+The compiled `neasyf.f90` file is generated from `neasyf.in.f90` by running:
 
 ```
-$ ./generate_source.py --write-to neasyf.f90
+fypp src/neasy.in.f90 src/neasyf.f90
 ```
 
-If you develop neasy-f and make changes to any of the `*.in.f90` files, don't
+If you're developing neasy-f, you might find it useful to add the `-n` flag,
+which adds line directives, making it easier to track down compiler warnings and
+errors.
+
+If you develop neasy-f and make changes to the `neasyf.in.f90` files, don't
 forget to re-generate the main `neasyf.f90` file and commit it.

@@ -26,5 +26,13 @@ jobs:
           nf-config --all
       - uses: actions/checkout@v3
 
+      - name: Set up Python "3.x"
+        uses: actions/setup-python@v4
+        with:
+          python-version: "3.x"
+
+      - name: Install fypp
+        run: pip install fypp
+
       - name: Build neasy-f
         run: ./scripts/ci_build_and_run.sh

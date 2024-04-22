@@ -61,6 +61,7 @@
 !> `*.in.f90` files and run the `generate_source.py` script -- or just rebuild
 !> the library using CMake.
 module neasyf
+  use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
   use netcdf, only : NF90_INT
   implicit none
 
@@ -82,60 +83,165 @@ module neasyf
 
   integer, parameter :: nf_kind = kind(NF90_INT)
 
+
+
+
+
   interface neasyf_type
     module procedure neasyf_type_scalar
-    module procedure neasyf_type_rank1
-    module procedure neasyf_type_rank2
-    module procedure neasyf_type_rank3
-    module procedure neasyf_type_rank4
-    module procedure neasyf_type_rank5
-    module procedure neasyf_type_rank6
-    module procedure neasyf_type_rank7
+    module procedure neasyf_type_rank_1
+    module procedure neasyf_type_rank_2
+    module procedure neasyf_type_rank_3
+    module procedure neasyf_type_rank_4
+    module procedure neasyf_type_rank_5
+    module procedure neasyf_type_rank_6
+    module procedure neasyf_type_rank_7
   end interface neasyf_type
 
+  !> Write a variable to a netCDF file or group, defining it if it isn't already
+  !> defined in the dataset.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
+  !> doesn't already exist in the file.
+  !>
+  !> If you pass `dim_names`, then Fortran requires each element be the same
+  !> length. If you have dimension names of different lengths, you can simplify
+  !> passing this array by doing something like:
+  !>
+  !>     call neasyf_write(file_id, "var", data, dim_names=&
+  !>                       [character(len=len("longer_dim"))::&
+  !>                           "short", &
+  !>                           "longer_dim" &
+  !>                       ])
+  !>
+  !> which avoids the need to manually pad each dimension name with spaces.
   interface neasyf_write
-    module procedure neasyf_write_scalar
-    module procedure neasyf_write_rank1
-    module procedure neasyf_write_rank2
-    module procedure neasyf_write_rank3
-    module procedure neasyf_write_rank4
-    module procedure neasyf_write_rank5
-    module procedure neasyf_write_rank6
-    module procedure neasyf_write_rank7
+    module procedure neasyf_write_integer_int8_rank_0
+    module procedure neasyf_write_integer_int8_rank_1
+    module procedure neasyf_write_integer_int8_rank_2
+    module procedure neasyf_write_integer_int8_rank_3
+    module procedure neasyf_write_integer_int8_rank_4
+    module procedure neasyf_write_integer_int8_rank_5
+    module procedure neasyf_write_integer_int8_rank_6
+    module procedure neasyf_write_integer_int8_rank_7
+    module procedure neasyf_write_integer_int16_rank_0
+    module procedure neasyf_write_integer_int16_rank_1
+    module procedure neasyf_write_integer_int16_rank_2
+    module procedure neasyf_write_integer_int16_rank_3
+    module procedure neasyf_write_integer_int16_rank_4
+    module procedure neasyf_write_integer_int16_rank_5
+    module procedure neasyf_write_integer_int16_rank_6
+    module procedure neasyf_write_integer_int16_rank_7
+    module procedure neasyf_write_integer_int32_rank_0
+    module procedure neasyf_write_integer_int32_rank_1
+    module procedure neasyf_write_integer_int32_rank_2
+    module procedure neasyf_write_integer_int32_rank_3
+    module procedure neasyf_write_integer_int32_rank_4
+    module procedure neasyf_write_integer_int32_rank_5
+    module procedure neasyf_write_integer_int32_rank_6
+    module procedure neasyf_write_integer_int32_rank_7
+    module procedure neasyf_write_real_real32_rank_0
+    module procedure neasyf_write_real_real32_rank_1
+    module procedure neasyf_write_real_real32_rank_2
+    module procedure neasyf_write_real_real32_rank_3
+    module procedure neasyf_write_real_real32_rank_4
+    module procedure neasyf_write_real_real32_rank_5
+    module procedure neasyf_write_real_real32_rank_6
+    module procedure neasyf_write_real_real32_rank_7
+    module procedure neasyf_write_real_real64_rank_0
+    module procedure neasyf_write_real_real64_rank_1
+    module procedure neasyf_write_real_real64_rank_2
+    module procedure neasyf_write_real_real64_rank_3
+    module procedure neasyf_write_real_real64_rank_4
+    module procedure neasyf_write_real_real64_rank_5
+    module procedure neasyf_write_real_real64_rank_6
+    module procedure neasyf_write_real_real64_rank_7
+    module procedure neasyf_write_character_rank_0
+    module procedure neasyf_write_character_rank_1
+    module procedure neasyf_write_character_rank_2
+    module procedure neasyf_write_character_rank_3
+    module procedure neasyf_write_character_rank_4
+    module procedure neasyf_write_character_rank_5
+    module procedure neasyf_write_character_rank_6
+    module procedure neasyf_write_character_rank_7
   end interface neasyf_write
 
+  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
   interface neasyf_read
-    module procedure neasyf_read_scalar
-    module procedure neasyf_read_rank1
-    module procedure neasyf_read_rank2
-    module procedure neasyf_read_rank3
-    module procedure neasyf_read_rank4
-    module procedure neasyf_read_rank5
-    module procedure neasyf_read_rank6
-    module procedure neasyf_read_rank7
+    module procedure neasyf_read_integer_int8_rank_0
+    module procedure neasyf_read_integer_int8_rank_1
+    module procedure neasyf_read_integer_int8_rank_2
+    module procedure neasyf_read_integer_int8_rank_3
+    module procedure neasyf_read_integer_int8_rank_4
+    module procedure neasyf_read_integer_int8_rank_5
+    module procedure neasyf_read_integer_int8_rank_6
+    module procedure neasyf_read_integer_int8_rank_7
+    module procedure neasyf_read_integer_int16_rank_0
+    module procedure neasyf_read_integer_int16_rank_1
+    module procedure neasyf_read_integer_int16_rank_2
+    module procedure neasyf_read_integer_int16_rank_3
+    module procedure neasyf_read_integer_int16_rank_4
+    module procedure neasyf_read_integer_int16_rank_5
+    module procedure neasyf_read_integer_int16_rank_6
+    module procedure neasyf_read_integer_int16_rank_7
+    module procedure neasyf_read_integer_int32_rank_0
+    module procedure neasyf_read_integer_int32_rank_1
+    module procedure neasyf_read_integer_int32_rank_2
+    module procedure neasyf_read_integer_int32_rank_3
+    module procedure neasyf_read_integer_int32_rank_4
+    module procedure neasyf_read_integer_int32_rank_5
+    module procedure neasyf_read_integer_int32_rank_6
+    module procedure neasyf_read_integer_int32_rank_7
+    module procedure neasyf_read_real_real32_rank_0
+    module procedure neasyf_read_real_real32_rank_1
+    module procedure neasyf_read_real_real32_rank_2
+    module procedure neasyf_read_real_real32_rank_3
+    module procedure neasyf_read_real_real32_rank_4
+    module procedure neasyf_read_real_real32_rank_5
+    module procedure neasyf_read_real_real32_rank_6
+    module procedure neasyf_read_real_real32_rank_7
+    module procedure neasyf_read_real_real64_rank_0
+    module procedure neasyf_read_real_real64_rank_1
+    module procedure neasyf_read_real_real64_rank_2
+    module procedure neasyf_read_real_real64_rank_3
+    module procedure neasyf_read_real_real64_rank_4
+    module procedure neasyf_read_real_real64_rank_5
+    module procedure neasyf_read_real_real64_rank_6
+    module procedure neasyf_read_real_real64_rank_7
+    module procedure neasyf_read_character_rank_0
+    module procedure neasyf_read_character_rank_1
+    module procedure neasyf_read_character_rank_2
+    module procedure neasyf_read_character_rank_3
+    module procedure neasyf_read_character_rank_4
+    module procedure neasyf_read_character_rank_5
+    module procedure neasyf_read_character_rank_6
+    module procedure neasyf_read_character_rank_7
   end interface neasyf_read
 
-  interface polymorphic_put_var
-    module procedure polymorphic_put_var_scalar
-    module procedure polymorphic_put_var_rank1
-    module procedure polymorphic_put_var_rank2
-    module procedure polymorphic_put_var_rank3
-    module procedure polymorphic_put_var_rank4
-    module procedure polymorphic_put_var_rank5
-    module procedure polymorphic_put_var_rank6
-    module procedure polymorphic_put_var_rank7
-  end interface polymorphic_put_var
-
-  interface polymorphic_get_var
-    module procedure polymorphic_get_var_scalar
-    module procedure polymorphic_get_var_rank1
-    module procedure polymorphic_get_var_rank2
-    module procedure polymorphic_get_var_rank3
-    module procedure polymorphic_get_var_rank4
-    module procedure polymorphic_get_var_rank5
-    module procedure polymorphic_get_var_rank6
-    module procedure polymorphic_get_var_rank7
-  end interface polymorphic_get_var
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  interface neasyf_dim
+    module procedure neasyf_dim_index
+    module procedure neasyf_dim_integer_int8
+    module procedure neasyf_dim_integer_int16
+    module procedure neasyf_dim_integer_int32
+    module procedure neasyf_dim_real_real32
+    module procedure neasyf_dim_real_real64
+    module procedure neasyf_dim_character
+  end interface neasyf_dim
 
 contains
 
@@ -265,7 +371,6 @@ contains
 
   !> Return the corresponding netCDF type for [[variable]]
   function neasyf_type_scalar(variable) result(nf_type)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
     use netcdf, only : NF90_BYTE, NF90_CHAR, NF90_SHORT, NF90_INT, NF90_REAL, NF90_DOUBLE
     integer(nf_kind) :: nf_type
     class(*), intent(in) :: variable
@@ -289,507 +394,81 @@ contains
     end select
   end function neasyf_type_scalar
 
-  function neasyf_type_rank1(variable) result(nf_type)
+  function neasyf_type_rank_1(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:), intent(in) :: variable
     class(*), dimension(:), allocatable :: local
     allocate(local(1), mold=variable)
     nf_type = neasyf_type(local(1))
-  end function neasyf_type_rank1
+  end function neasyf_type_rank_1
 
-  function neasyf_type_rank2(variable) result(nf_type)
+  function neasyf_type_rank_2(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :), intent(in) :: variable
     class(*), dimension(:, :), allocatable :: local
     allocate(local(1, 1), mold=variable)
     nf_type = neasyf_type(local(1, 1))
-  end function neasyf_type_rank2
+  end function neasyf_type_rank_2
 
-  function neasyf_type_rank3(variable) result(nf_type)
+  function neasyf_type_rank_3(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :), intent(in) :: variable
     class(*), dimension(:, :, :), allocatable :: local
     allocate(local(1, 1, 1), mold=variable)
     nf_type = neasyf_type(local(1, 1, 1))
-  end function neasyf_type_rank3
+  end function neasyf_type_rank_3
 
-  function neasyf_type_rank4(variable) result(nf_type)
+  function neasyf_type_rank_4(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :), intent(in) :: variable
     class(*), dimension(:, :, :, :), allocatable :: local
     allocate(local(1, 1, 1, 1), mold=variable)
     nf_type = neasyf_type(local(1, 1, 1, 1))
-  end function neasyf_type_rank4
+  end function neasyf_type_rank_4
 
-  function neasyf_type_rank5(variable) result(nf_type)
+  function neasyf_type_rank_5(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :, :), intent(in) :: variable
     class(*), dimension(:, :, :, :, :), allocatable :: local
     allocate(local(1, 1, 1, 1, 1), mold=variable)
     nf_type = neasyf_type(local(1, 1, 1, 1, 1))
-  end function neasyf_type_rank5
+  end function neasyf_type_rank_5
 
-  function neasyf_type_rank6(variable) result(nf_type)
+  function neasyf_type_rank_6(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :, :, :), intent(in) :: variable
     class(*), dimension(:, :, :, :, :, :), allocatable :: local
     allocate(local(1, 1, 1, 1, 1, 1), mold=variable)
     nf_type = neasyf_type(local(1, 1, 1, 1, 1, 1))
-  end function neasyf_type_rank6
+  end function neasyf_type_rank_6
 
-  function neasyf_type_rank7(variable) result(nf_type)
+  function neasyf_type_rank_7(variable) result(nf_type)
     integer(nf_kind) :: nf_type
     class(*), dimension(:, :, :, :, :, :, :), intent(in) :: variable
     class(*), dimension(:, :, :, :, :, :, :), allocatable :: local
     allocate(local(1, 1, 1, 1, 1, 1, 1), mold=variable)
     nf_type = neasyf_type(local(1, 1, 1, 1, 1, 1, 1))
-  end function neasyf_type_rank7
-
-
-  function polymorphic_put_var_scalar(ncid, varid, values, start) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start
-    integer :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_scalar
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank1(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank1
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank2(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:, :), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank2
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank3(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:, :, :), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank3
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank4(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:, :, :, :), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank4
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank5(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:, :, :, :, :), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank5
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank6(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:, :, :, :, :, :), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank6
-
-  !> A wrapper around `nf90_put_var` to handle runtime and unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_put_var`.
-  function polymorphic_put_var_rank7(ncid, varid, values, start, count, stride, map) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_put_var, NF90_EBADTYPE
-    integer, intent( in) :: ncid, varid
-    class(*), dimension(:, :, :, :, :, :, :), intent(in) :: values
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int16))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (integer(int32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real32))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (real(real64))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    type is (character(len=*))
-      status = nf90_put_var(ncid, varid, values, start, count, stride, map)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_put_var_rank7
-
-
-  function polymorphic_get_var_scalar(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_scalar
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank1(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank1
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank2(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:, :), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank2
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank3(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:, :, :), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank3
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank4(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:, :, :, :), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank4
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank5(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:, :, :, :, :), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank5
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank6(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:, :, :, :, :, :), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank6
-
-  !> Wrapper around `nf90_get_var` to enable unlimited polymorphism.
-  !> All arguments have the same meanings as `nf90_get_var`.
-  function polymorphic_get_var_rank7(ncid, varid, values) result(status)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
-    use netcdf, only : nf90_get_var, NF90_EBADTYPE
-    integer, intent(in) :: ncid, varid
-    class(*), dimension(:, :, :, :, :, :, :), intent(out) :: values
-    integer(nf_kind) :: status
-    select type (values)
-    type is (integer(int8))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int16))
-      status = nf90_get_var(ncid, varid, values)
-    type is (integer(int32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real32))
-      status = nf90_get_var(ncid, varid, values)
-    type is (real(real64))
-      status = nf90_get_var(ncid, varid, values)
-    type is (character(len=*))
-      status = nf90_get_var(ncid, varid, values)
-    class default
-      status = NF90_EBADTYPE
-    end select
-  end function polymorphic_get_var_rank7
+  end function neasyf_type_rank_7
 
 
   !> Create a dimension if it doesn't already exist.
   !>
   !> If the dimension doesn't exist, also create a variable of the same name and
-  !> fill it with `values`, or the integers in the range `1..dim_size`. The
-  !> optional argument `unlimited` can be used to make this dimension
-  !> unlimited in extent.
+  !> fill it with the integers in the range `1..dim_size`. The optional argument
+  !> `unlimited` can be used to make this dimension unlimited in extent.
   !>
   !> Optional arguments "unit" and "long_name" allow you to create attributes
   !> of the same names.
   !>
   !> The netCDF IDs of the dimension and corresponding variable can be returned
   !> through `dimid` and `varid` respectively.
-  subroutine neasyf_dim(parent_id, name, values, dim_size, dimid, varid, units, long_name, unlimited)
-
+  subroutine neasyf_dim_index(parent_id, name, dim_size, dimid, varid, units, long_name, unlimited)
     use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
          NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
-    !> Coordinate values
-    class(*), dimension(:), optional, target, intent(in) :: values
     !> Size of the dimension if values isn't specified
     integer, optional, intent(in) :: dim_size
     !> NetCDF ID of the dimension
@@ -803,16 +482,11 @@ contains
     !> Is this dimension unlimited?
     logical, optional, intent(in) :: unlimited
 
-    integer :: status
+    integer:: status
     integer(nf_kind) :: dim_id, var_id
     integer :: i
     integer :: local_size
-    class(*), dimension(:), pointer :: local_values
     logical :: local_unlimited
-
-    if (present(values) .and. present(dim_size)) then
-      error stop "neasyf_dim: Both 'values' and 'dim_size' given. Only one must be present"
-    end if
 
     status = nf90_inq_dimid(parent_id, name, dim_id)
     if (status == NF90_NOERR) then
@@ -833,7 +507,7 @@ contains
       call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
     end if
 
-    if (.not. (present(values) .or. present(dim_size) .or. present(unlimited))) then
+    if (.not. (present(dim_size) .or. present(unlimited))) then
       error stop "neasyf_dim: Dimension does not exist and none of 'values', 'dim_size', or 'unlimited' given. &
            &Exactly one must be present"
     end if
@@ -844,15 +518,12 @@ contains
 
     ! Dimension doesn't exist, so let's create it. First we need to get the
     ! initial size of the dimension
-    if (present(values)) then
-      local_size = size(values)
-      local_values => values
-    else if (present(dim_size)) then
+    if (present(dim_size)) then
       local_size = dim_size
-      allocate(local_values, source=[(i, i=1, dim_size)])
     end if
 
     ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
     if (present(unlimited)) then
       local_unlimited = unlimited
       if (unlimited) then
@@ -862,7 +533,7 @@ contains
 
     if (local_size < 0) then
       error stop "neasyf_dim: Dimension does not exist, and initial size not set. &
-           &Either pass one of 'values' or 'dim_size', or set 'unlimited=.true.'"
+           &Either pass 'dim_size', or set 'unlimited=.true.'"
     end if
 
     if (local_size == 0 .and. .not. local_unlimited) then
@@ -878,7 +549,7 @@ contains
     end if
 
     ! For unlimited dimensions, if no initial size or values provided, we're done
-    if (local_unlimited .and. .not. (present(values) .or. present(dim_size))) then
+    if (local_unlimited .and. .not. (present(dim_size))) then
       if (present(varid)) then
         error stop "neasyf_dim: Deferring variable creation, but 'varid' passed and would be given an invalid value. &
              &Please remove 'varid' or pass one of 'values' or 'dim_size'"
@@ -886,19 +557,563 @@ contains
       return
     end if
 
-    call neasyf_write(parent_id, name, local_values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+    call neasyf_write(parent_id, name, [integer(int32)::(i, i=1, local_size)], dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
 
     if (present(varid)) then
       varid = var_id
     end if
+  end subroutine neasyf_dim_index
 
-    ! If we allocated local_values, best free the memory. Note that
-    ! `allocated(local_values)` doesn't work here, because Fortran.
-    if (.not. present(values) .and. present(dim_size)) deallocate(local_values)
-  end subroutine neasyf_dim
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_integer_int8(parent_id, name, values, dimid, varid, units, long_name, unlimited)
 
-  subroutine neasyf_write_scalar(parent_id, name, values, dim_ids, dim_names, units, long_name, start)
-    use, intrinsic :: iso_fortran_env, only : int8, int16, int32, real32, real64
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(integer(int8)), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_integer_int8
+
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_integer_int16(parent_id, name, values, dimid, varid, units, long_name, unlimited)
+
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(integer(int16)), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_integer_int16
+
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_integer_int32(parent_id, name, values, dimid, varid, units, long_name, unlimited)
+
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(integer(int32)), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_integer_int32
+
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_real_real32(parent_id, name, values, dimid, varid, units, long_name, unlimited)
+
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(real(real32)), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_real_real32
+
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_real_real64(parent_id, name, values, dimid, varid, units, long_name, unlimited)
+
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(real(real64)), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_real_real64
+
+  !> Create a dimension if it doesn't already exist.
+  !>
+  !> If the dimension doesn't exist, also create a variable of the same name and
+  !> fill it with `values`, or the integers in the range `1..dim_size`. The
+  !> optional argument `unlimited` can be used to make this dimension
+  !> unlimited in extent.
+  !>
+  !> Optional arguments "unit" and "long_name" allow you to create attributes
+  !> of the same names.
+  !>
+  !> The netCDF IDs of the dimension and corresponding variable can be returned
+  !> through `dimid` and `varid` respectively.
+  subroutine neasyf_dim_character(parent_id, name, values, dimid, varid, units, long_name, unlimited)
+
+    use netcdf, only : nf90_inq_dimid, nf90_inq_varid, nf90_def_var, nf90_def_dim, nf90_put_var, nf90_put_att, &
+         NF90_NOERR, NF90_EBADDIM, NF90_UNLIMITED
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Coordinate values
+    type(character(len=*)), dimension(:), intent(in) :: values
+    !> NetCDF ID of the dimension
+    integer, optional, intent(out) :: dimid
+    !> NetCDF ID of the corresponding variable
+    integer, optional, intent(out) :: varid
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name of coordinate
+    character(len=*), optional, intent(in) :: long_name
+    !> Is this dimension unlimited?
+    logical, optional, intent(in) :: unlimited
+
+    integer:: status
+    integer(nf_kind) :: dim_id, var_id
+    integer :: local_size
+    logical :: local_unlimited
+
+    status = nf90_inq_dimid(parent_id, name, dim_id)
+    if (status == NF90_NOERR) then
+      if (present(dimid)) then
+        dimid = dim_id
+      end if
+
+      if (present(varid)) then
+        call neasyf_error(nf90_inq_varid(parent_id, name, var_id), var=name, &
+                          message="retrieving ID of existing dimension variable")
+        varid = var_id
+      end if
+
+      return
+    end if
+
+    if (status /= NF90_EBADDIM) then
+      call neasyf_error(status, ncid=parent_id, dim=name, dimid=dim_id)
+    end if
+
+    ! TODO: Check existing size is compatible with current arguments
+
+    ! Dimension doesn't exist, so let's create it. First we need to get the
+    ! initial size of the dimension
+    local_size = size(values)
+
+    ! Setting the dimension to be unlimited overrides the size
+    local_unlimited = .false.
+    if (present(unlimited)) then
+      local_unlimited = unlimited
+      if (unlimited) then
+        local_size = NF90_UNLIMITED
+      end if
+    end if
+
+    if (local_size == 0 .and. .not. local_unlimited) then
+      error stop "neasyf_dim: Dimension does not exist, and initial size is 0. &
+           &If you're trying to create an unlimited dimension, pass 'unlimited=.true.' instead"
+    end if
+
+    status = nf90_def_dim(parent_id, name, local_size, dim_id)
+    call neasyf_error(status, dim=name, dimid=dim_id, message="creating dimension")
+
+    if (present(dimid)) then
+      dimid = dim_id
+    end if
+
+    call neasyf_write(parent_id, name, values, dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_dim_character
+
+
+  subroutine neasyf_write_integer_int8_rank_0(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
@@ -906,62 +1121,63 @@ contains
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), intent(in) :: values
+    type(integer(int8)), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
     !> Array of dimension names
     character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
-    !> Insertion index (one-based). Note that this is an array with one element!
-    integer, dimension(1), optional, intent(in) :: start
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start
 
+    integer, dimension(:), allocatable :: local_dim_ids
     integer(nf_kind) :: nf_type
     integer :: status
-    integer :: var_id, dim_id, dim_index
-    integer, dimension(:), allocatable :: local_dim_ids
+    integer :: var_id
+    integer :: local_compression
 
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      select type(values)
-      type is (character(len=*))
-        status = nf90_def_dim(parent_id, name // "_dim", len_trim(values), dim_id)
-        call neasyf_error(status, var=name, message="defining string dimension")
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
-        status = nf90_def_var(parent_id, name, NF90_CHAR, [dim_id], var_id)
-      class default
-        ! TODO: check if nf_type indicates a derived type
-        nf_type = neasyf_type(values)
+      local_compression = neasyf_default_compression
 
-        if (present(start)) then
-          ! If we've been passed `start`, then we must be writing into
-          ! a 1D array, in which case we need to know the associated
-          ! dimension in order to create the variable
-          if (.not. (present(dim_ids) .or. present(dim_names))) then
-            call neasyf_error(NF90_EDIMMETA, var=name, &
-                 message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
-          end if
+      if (present(start)) then
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
 
-          ! Either use the passed in array of dimension IDs, or look them up from the array of names
-          if (present(dim_ids)) then
-            local_dim_ids = dim_ids
-          else
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
             allocate(local_dim_ids(ubound(dim_names, 1)))
             do dim_index = 1, ubound(dim_names, 1)
               status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
               call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
             end do
-          end if
-          ! Create an N-D variable, although we're only going to write a single value
-          status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
-        else
-          ! Create a scalar variable
-          status = nf90_def_var(parent_id, name, nf_type, var_id)
+          end block
         end if
-      end select
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      else
+        ! Create a scalar variable
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+      end if
       call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
@@ -977,51 +1193,58 @@ contains
       call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start=start)
+    status = nf90_put_var(parent_id, var_id, values, start)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-  end subroutine neasyf_write_scalar
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int8_rank_0
+
+  subroutine neasyf_read_integer_int8_rank_0(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_0
+
+  subroutine neasyf_write_integer_int8_rank_1(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:), intent(in) :: values
+    type(integer(int8)), dimension(:), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1031,7 +1254,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1040,32 +1262,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1076,62 +1305,62 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank1
+  end subroutine neasyf_write_integer_int8_rank_1
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+  subroutine neasyf_read_integer_int8_rank_1(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), dimension(:), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_1
+
+  subroutine neasyf_write_integer_int8_rank_2(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:, :), intent(in) :: values
+    type(integer(int8)), dimension(:, :), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1141,7 +1370,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1150,32 +1378,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1186,62 +1421,62 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank2
+  end subroutine neasyf_write_integer_int8_rank_2
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+  subroutine neasyf_read_integer_int8_rank_2(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), dimension(:, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_2
+
+  subroutine neasyf_write_integer_int8_rank_3(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:, :, :), intent(in) :: values
+    type(integer(int8)), dimension(:, :, :), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1251,7 +1486,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1260,32 +1494,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1296,62 +1537,62 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank3
+  end subroutine neasyf_write_integer_int8_rank_3
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+  subroutine neasyf_read_integer_int8_rank_3(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), dimension(:, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_3
+
+  subroutine neasyf_write_integer_int8_rank_4(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:, :, :, :), intent(in) :: values
+    type(integer(int8)), dimension(:, :, :, :), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1361,7 +1602,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1370,32 +1610,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1406,62 +1653,62 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank4
+  end subroutine neasyf_write_integer_int8_rank_4
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+  subroutine neasyf_read_integer_int8_rank_4(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), dimension(:, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_4
+
+  subroutine neasyf_write_integer_int8_rank_5(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:, :, :, :, :), intent(in) :: values
+    type(integer(int8)), dimension(:, :, :, :, :), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1471,7 +1718,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1480,32 +1726,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1516,62 +1769,62 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank5
+  end subroutine neasyf_write_integer_int8_rank_5
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+  subroutine neasyf_read_integer_int8_rank_5(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), dimension(:, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_5
+
+  subroutine neasyf_write_integer_int8_rank_6(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:, :, :, :, :, :), intent(in) :: values
+    type(integer(int8)), dimension(:, :, :, :, :, :), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1581,7 +1834,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1590,32 +1842,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1626,62 +1885,62 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank6
+  end subroutine neasyf_write_integer_int8_rank_6
 
-  !> Write a variable to a netCDF file or group, defining it if it isn't already
-  !> defined in the dataset.
-  !>
-  !> Optional arguments "unit" and "long_name" allow you to create attributes
-  !> of the same names.
-  !>
-  !> Exactly one of `dim_ids` or `dim_names` must be present if the variable
-  !> doesn't already exist in the file.
-  !>
-  !> If you pass `dim_names`, then Fortran requires each element be the same
-  !> length. If you have dimension names of different lengths, you can simplify
-  !> passing this array by doing something like:
-  !>
-  !>     call neasyf_write(file_id, "var", data, dim_names=&
-  !>                       [character(len=len("longer_dim"))::&
-  !>                           "short", &
-  !>                           "longer_dim" &
-  !>                       ])
-  !>
-  !> which avoids the need to manually pad each dimension name with spaces.
-  subroutine neasyf_write_rank7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start, count, stride, map, compression)
-    use, intrinsic :: iso_fortran_env, only : error_unit
+  subroutine neasyf_read_integer_int8_rank_6(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int8)), dimension(:, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int8_rank_6
+
+  subroutine neasyf_write_integer_int8_rank_7(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         nf90_inq_dimid, NF90_NOERR, NF90_ENOTVAR, NF90_EDIMMETA
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
     integer, intent(in) :: parent_id
     !> Value of the integer to write
-    class(*), dimension(:, :, :, :, :, :, :), intent(in) :: values
+    type(integer(int8)), dimension(:, :, :, :, :, :, :), intent(in) :: values
     !> Array of dimension IDs
     integer, dimension(:), optional, intent(in) :: dim_ids
-    !> Array of dimension names
-    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> If provided, used to return the NetCDF ID of the variable
     integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
     !> Units of coordinate
     character(len=*), optional, intent(in) :: units
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
     integer, dimension(:), optional, intent(in) :: start, count, stride, map
     !> If non-zero, use compression.
     !>
@@ -1691,7 +1950,6 @@ contains
     integer, optional, intent(in) :: compression
 
     integer, dimension(:), allocatable :: local_dim_ids
-    integer :: dim_index
     integer(nf_kind) :: nf_type
     integer :: status
     integer :: var_id
@@ -1700,32 +1958,39 @@ contains
     status = nf90_inq_varid(parent_id, name, var_id)
     ! Variable doesn't exist, so let's create it
     if (status == NF90_ENOTVAR) then
-      if (.not. (present(dim_ids) .or. present(dim_names))) then
-        call neasyf_error(NF90_EDIMMETA, var=name, &
-             message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if variable doesn't already exist")
-      end if
-
-      ! Either use the passed in array of dimension IDs, or look them up from the array of names
-      if (present(dim_ids)) then
-        local_dim_ids = dim_ids
-      else
-        allocate(local_dim_ids(ubound(dim_names, 1)))
-        do dim_index = 1, ubound(dim_names, 1)
-          status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
-          call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
-        end do
-      end if
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
 
       local_compression = neasyf_default_compression
-      if (present(compression)) then
-        local_compression = compression
-      end if
 
-      nf_type = neasyf_type(values)
-      ! TODO: check if nf_type indicates a derived type
-      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
-           shuffle=(local_compression > 0), deflate_level=local_compression)
-      deallocate(local_dim_ids)
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
 
       if (present(units)) then
         status = nf90_put_att(parent_id, var_id, "units", units)
@@ -1736,204 +2001,4638 @@ contains
         status = nf90_put_att(parent_id, var_id, "long_name", long_name)
         call neasyf_error(status, var=name, varid=var_id, att="long_name")
       end if
-    end if
-    ! Something went wrong with one of the previous two calls
-    if (status /= NF90_NOERR) then
-      call neasyf_error(status, var=name, varid=var_id, &
-                        message="defining variable")
+    else
+      call neasyf_error(status, var=name, varid=var_id)
     end if
 
-    status = polymorphic_put_var(parent_id, var_id, values, start, count, stride, map)
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
     if (present(varid)) then
       varid = var_id
     end if
-  end subroutine neasyf_write_rank7
+  end subroutine neasyf_write_integer_int8_rank_7
 
-
-  subroutine neasyf_read_scalar(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_read_integer_int8_rank_7(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), intent(out) :: values
-
-    integer :: status
+    type(integer(int8)), dimension(:, :, :, :, :, :, :), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_scalar
+  end subroutine neasyf_read_integer_int8_rank_7
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank1(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_0(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+      if (present(start)) then
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      else
+        ! Create a scalar variable
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+      end if
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_0
+
+  subroutine neasyf_read_integer_int16_rank_0(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank1
+  end subroutine neasyf_read_integer_int16_rank_0
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank2(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_1(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_1
+
+  subroutine neasyf_read_integer_int16_rank_1(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:, :), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), dimension(:), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank2
+  end subroutine neasyf_read_integer_int16_rank_1
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank3(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_2(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_2
+
+  subroutine neasyf_read_integer_int16_rank_2(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:, :, :), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), dimension(:, :), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank3
+  end subroutine neasyf_read_integer_int16_rank_2
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank4(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_3(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_3
+
+  subroutine neasyf_read_integer_int16_rank_3(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:, :, :, :), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), dimension(:, :, :), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank4
+  end subroutine neasyf_read_integer_int16_rank_3
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank5(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_4(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_4
+
+  subroutine neasyf_read_integer_int16_rank_4(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:, :, :, :, :), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), dimension(:, :, :, :), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank5
+  end subroutine neasyf_read_integer_int16_rank_4
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank6(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_5(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_5
+
+  subroutine neasyf_read_integer_int16_rank_5(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:, :, :, :, :, :), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), dimension(:, :, :, :, :), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank6
+  end subroutine neasyf_read_integer_int16_rank_5
 
-  !> Wrapper around `nf90_get_var` that uses the variable name instead of ID
-  subroutine neasyf_read_rank7(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable
+  subroutine neasyf_write_integer_int16_rank_6(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_6
+
+  subroutine neasyf_read_integer_int16_rank_6(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
-    class(*), dimension(:, :, :, :, :, :, :), intent(out) :: values
-
-    integer :: status
+    type(integer(int16)), dimension(:, :, :, :, :, :), intent(out) :: values
+    integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
 
-    status = polymorphic_get_var(parent_id, var_id, values)
+    status = nf90_get_var(parent_id, var_id, values)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
-  end subroutine neasyf_read_rank7
+  end subroutine neasyf_read_integer_int16_rank_6
+
+  subroutine neasyf_write_integer_int16_rank_7(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int16)), dimension(:, :, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int16_rank_7
+
+  subroutine neasyf_read_integer_int16_rank_7(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int16)), dimension(:, :, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int16_rank_7
+
+  subroutine neasyf_write_integer_int32_rank_0(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+      if (present(start)) then
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      else
+        ! Create a scalar variable
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+      end if
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_0
+
+  subroutine neasyf_read_integer_int32_rank_0(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_0
+
+  subroutine neasyf_write_integer_int32_rank_1(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_1
+
+  subroutine neasyf_read_integer_int32_rank_1(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_1
+
+  subroutine neasyf_write_integer_int32_rank_2(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_2
+
+  subroutine neasyf_read_integer_int32_rank_2(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_2
+
+  subroutine neasyf_write_integer_int32_rank_3(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_3
+
+  subroutine neasyf_read_integer_int32_rank_3(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_3
+
+  subroutine neasyf_write_integer_int32_rank_4(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_4
+
+  subroutine neasyf_read_integer_int32_rank_4(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_4
+
+  subroutine neasyf_write_integer_int32_rank_5(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_5
+
+  subroutine neasyf_read_integer_int32_rank_5(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_5
+
+  subroutine neasyf_write_integer_int32_rank_6(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_6
+
+  subroutine neasyf_read_integer_int32_rank_6(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_6
+
+  subroutine neasyf_write_integer_int32_rank_7(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(integer(int32)), dimension(:, :, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_integer_int32_rank_7
+
+  subroutine neasyf_read_integer_int32_rank_7(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(integer(int32)), dimension(:, :, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_integer_int32_rank_7
+
+  subroutine neasyf_write_real_real32_rank_0(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+      if (present(start)) then
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      else
+        ! Create a scalar variable
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+      end if
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_0
+
+  subroutine neasyf_read_real_real32_rank_0(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_0
+
+  subroutine neasyf_write_real_real32_rank_1(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_1
+
+  subroutine neasyf_read_real_real32_rank_1(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_1
+
+  subroutine neasyf_write_real_real32_rank_2(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_2
+
+  subroutine neasyf_read_real_real32_rank_2(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_2
+
+  subroutine neasyf_write_real_real32_rank_3(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_3
+
+  subroutine neasyf_read_real_real32_rank_3(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_3
+
+  subroutine neasyf_write_real_real32_rank_4(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_4
+
+  subroutine neasyf_read_real_real32_rank_4(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_4
+
+  subroutine neasyf_write_real_real32_rank_5(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_5
+
+  subroutine neasyf_read_real_real32_rank_5(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_5
+
+  subroutine neasyf_write_real_real32_rank_6(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_6
+
+  subroutine neasyf_read_real_real32_rank_6(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_6
+
+  subroutine neasyf_write_real_real32_rank_7(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real32)), dimension(:, :, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real32_rank_7
+
+  subroutine neasyf_read_real_real32_rank_7(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real32)), dimension(:, :, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real32_rank_7
+
+  subroutine neasyf_write_real_real64_rank_0(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+      if (present(start)) then
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      else
+        ! Create a scalar variable
+        status = nf90_def_var(parent_id, name, nf_type, var_id)
+      end if
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_0
+
+  subroutine neasyf_read_real_real64_rank_0(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_0
+
+  subroutine neasyf_write_real_real64_rank_1(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_1
+
+  subroutine neasyf_read_real_real64_rank_1(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_1
+
+  subroutine neasyf_write_real_real64_rank_2(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_2
+
+  subroutine neasyf_read_real_real64_rank_2(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_2
+
+  subroutine neasyf_write_real_real64_rank_3(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_3
+
+  subroutine neasyf_read_real_real64_rank_3(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_3
+
+  subroutine neasyf_write_real_real64_rank_4(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_4
+
+  subroutine neasyf_read_real_real64_rank_4(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_4
+
+  subroutine neasyf_write_real_real64_rank_5(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_5
+
+  subroutine neasyf_read_real_real64_rank_5(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_5
+
+  subroutine neasyf_write_real_real64_rank_6(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_6
+
+  subroutine neasyf_read_real_real64_rank_6(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_6
+
+  subroutine neasyf_write_real_real64_rank_7(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(real(real64)), dimension(:, :, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_real_real64_rank_7
+
+  subroutine neasyf_read_real_real64_rank_7(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(real(real64)), dimension(:, :, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_real_real64_rank_7
+
+  subroutine neasyf_write_character_rank_0(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+      ! Silence unused variable warning for this particular type/rank combo
+      if (present(dim_names)) then; end if
+
+      if (present(dim_ids)) then
+        local_dim_ids = dim_ids
+      else
+        block
+          integer :: dim_id
+          status = nf90_def_dim(parent_id, name // "_dim", len_trim(values), dim_id)
+          call neasyf_error(status, var=name, message="defining string dimension")
+          local_dim_ids = [dim_id]
+        end block
+      end if
+      status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_0
+
+  subroutine neasyf_read_character_rank_0(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_0
+
+  subroutine neasyf_write_character_rank_1(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_1
+
+  subroutine neasyf_read_character_rank_1(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_1
+
+  subroutine neasyf_write_character_rank_2(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_2
+
+  subroutine neasyf_read_character_rank_2(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_2
+
+  subroutine neasyf_write_character_rank_3(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_3
+
+  subroutine neasyf_read_character_rank_3(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_3
+
+  subroutine neasyf_write_character_rank_4(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_4
+
+  subroutine neasyf_read_character_rank_4(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_4
+
+  subroutine neasyf_write_character_rank_5(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_5
+
+  subroutine neasyf_read_character_rank_5(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_5
+
+  subroutine neasyf_write_character_rank_6(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_6
+
+  subroutine neasyf_read_character_rank_6(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_6
+
+  subroutine neasyf_write_character_rank_7(parent_id, name, values, dim_ids, dim_names, &
+       varid, units, long_name, start &
+       , count, stride, map, compression &
+       )
+    use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> NetCDF ID of the parent group/file
+    integer, intent(in) :: parent_id
+    !> Value of the integer to write
+    type(character(len=*)), dimension(:, :, :, :, :, :, :), intent(in) :: values
+    !> Array of dimension IDs
+    integer, dimension(:), optional, intent(in) :: dim_ids
+    !> If provided, used to return the NetCDF ID of the variable
+    integer, optional, intent(out) :: varid
+    !> Array of dimension names
+    character(len=*), dimension(:), optional, intent(in) :: dim_names
+    !> Units of coordinate
+    character(len=*), optional, intent(in) :: units
+    !> Long descriptive name
+    character(len=*), optional, intent(in) :: long_name
+    !> These are the same as the standard netCDF arguments
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    !> If non-zero, use compression.
+    !>
+    !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
+    !> parameter to `compression`. You can set the default compression through
+    !> [[neasyf_default_compression]]
+    integer, optional, intent(in) :: compression
+
+    integer, dimension(:), allocatable :: local_dim_ids
+    integer(nf_kind) :: nf_type
+    integer :: status
+    integer :: var_id
+    integer :: local_compression
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    ! Variable doesn't exist, so let's create it
+    if (status == NF90_ENOTVAR) then
+      ! TODO: check if nf_type indicates a derived type
+      nf_type = neasyf_type(values)
+
+      local_compression = neasyf_default_compression
+
+        if (present(compression)) then
+          local_compression = compression
+        end if
+        ! If we've been passed `start`, then we must be writing into
+        ! a 1D array, in which case we need to know the associated
+        ! dimension in order to create the variable
+        if (.not. (present(dim_ids) .or. present(dim_names))) then
+          call neasyf_error(NF90_EDIMMETA, var=name, &
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+        end if
+
+        ! Either use the passed in array of dimension IDs, or look them up from the array of names
+        if (present(dim_ids)) then
+          local_dim_ids = dim_ids
+        else
+          block
+            integer :: dim_index
+            allocate(local_dim_ids(ubound(dim_names, 1)))
+            do dim_index = 1, ubound(dim_names, 1)
+              status = nf90_inq_dimid(parent_id, trim(dim_names(dim_index)), local_dim_ids(dim_index))
+              call neasyf_error(status, var=name, dim=trim(dim_names(dim_index)))
+            end do
+          end block
+        end if
+
+        status = nf90_def_var(parent_id, name, nf_type, local_dim_ids, var_id, &
+             shuffle=(local_compression > 0), deflate_level=local_compression)
+      call neasyf_error(status, var=name, varid=var_id, message="defining variable")
+
+      if (present(units)) then
+        status = nf90_put_att(parent_id, var_id, "units", units)
+        call neasyf_error(status, var=name, varid=var_id, att="units")
+      end if
+
+      if (present(long_name)) then
+        status = nf90_put_att(parent_id, var_id, "long_name", long_name)
+        call neasyf_error(status, var=name, varid=var_id, att="long_name")
+      end if
+    else
+      call neasyf_error(status, var=name, varid=var_id)
+    end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
+    if (present(varid)) then
+      varid = var_id
+    end if
+  end subroutine neasyf_write_character_rank_7
+
+  subroutine neasyf_read_character_rank_7(parent_id, name, values)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+    !> NetCDF ID of the parent file or group
+    integer, intent(in) :: parent_id
+    !> Name of the variable
+    character(len=*), intent(in) :: name
+    !> Storage for the variable
+    type(character(len=*)), dimension(:, :, :, :, :, :, :), intent(out) :: values
+    integer:: status
+    integer(nf_kind) :: var_id
+
+    status = nf90_inq_varid(parent_id, name, var_id)
+    call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
+                      message="finding variable")
+
+    status = nf90_get_var(parent_id, var_id, values)
+
+    call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                      message="reading variable")
+  end subroutine neasyf_read_character_rank_7
 
 
   !> Convert a netCDF error code to a nice error message. Writes to `stderr`

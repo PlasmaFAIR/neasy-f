@@ -51,23 +51,18 @@ target_include_directories(neasyf PUBLIC
   )
 
 if (NEASYF_GENERATE_SOURCE)
-  find_package(Python3)
-  if (NOT Python3_FOUND)
-    message(FATAL_ERROR "Python not found. Unable to generate source file. If you just want to build \
+  find_program(FYPP
+    NAMES fypp)
+  if (NOT FYPP)
+    message(FATAL_ERROR "fypp not found. Unable to generate source file. If you just want to build \
 neasy-f, then disable source generation with NEASYF_GENERATE_SOURCE=off.")
   endif()
 
   set(neasy_f_source_file "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.f90")
   add_custom_command(OUTPUT ${neasy_f_source_file}
-    COMMAND ${Python3_EXECUTABLE} generate_source.py --write-to ${neasy_f_source_file}
+    COMMAND ${FYPP} "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.in.f90" ${neasy_f_source_file}
     DEPENDS
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/generate_source.py"
       "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.type.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.get_var.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.put_var.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.read.in.f90"
-      "${CMAKE_CURRENT_SOURCE_DIR}/src/neasyf.write.in.f90"
     WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/src
     COMMENT "Generating source code"
     )
