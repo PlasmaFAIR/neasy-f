@@ -74,11 +74,6 @@ For developers,
 Known Issues
 ------------
 
-- gfortran has a bug when passing slices of arrays of derived types:
-  trying to write `some_array%member` will result in the wrong values
-  getting written. To workaround this, copy `some_array%member` into a
-  temporary variable and pass that to `neasyf_write`
-
 - Creating fixed zero-length variables or dimensions is not possible,
   as netCDF uses `size = 0` to represent unlimited dimensions
 
