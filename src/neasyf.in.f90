@@ -431,7 +431,8 @@ contains
       return
     end if
 
-    call neasyf_write(parent_id, name, [integer(int32)::(i, i=1, local_size)], dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
+    call neasyf_write(parent_id, name, [integer(int32)::(i, i=1, local_size)], &
+         dim_ids=[dim_id], units=units, long_name=long_name, varid=var_id)
 
     if (present(varid)) then
       varid = var_id
@@ -542,8 +543,10 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid, &
-         nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+#:if not (RANK == 0 and TYPE_NAME.startswith("character"))
+    use netcdf, only : NF90_EDIMMETA
+#:endif
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
