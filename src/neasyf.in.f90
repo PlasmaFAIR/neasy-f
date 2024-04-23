@@ -539,9 +539,11 @@ contains
 #:if RANK > 0
        , count, stride, map, compression &
 #:endif
+       , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid
+         NF90_ENOTVAR, NF90_EDIMMETA, nf90_def_dim, NF90_CHAR, nf90_inq_dimid, &
+         nf90_var_par_access
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -570,6 +572,10 @@ contains
     !> [[neasyf_default_compression]]
     integer, optional, intent(in) :: compression
 #:endif
+    !> Set to `nf90_collective` to enable collective operations on this
+    !> variable. Note that the file must have been created or opened for
+    !> parallel IO.
+    integer, optional, intent(in) :: par_access
 
     integer, dimension(:), allocatable :: local_dim_ids
     integer(nf_kind) :: nf_type
@@ -654,6 +660,12 @@ contains
       call neasyf_error(status, var=name, varid=var_id)
     end if
 
+    if (present(par_access)) then
+       status = nf90_var_par_access(parent_id, var_id, par_access)
+       call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                         message="setting parallel access")
+    end if
+
 #:if RANK == 0
     status = nf90_put_var(parent_id, var_id, values, start)
 #:else
@@ -666,20 +678,31 @@ contains
     end if
   end subroutine neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$
 
-  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values)
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var
+  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, par_access)
+    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> Storage for the variable
     type(${TYPE_NAME}$)${dimension(RANK)}$, intent(out) :: values
+    !> Set to `nf90_collective` to enable collective operations on this
+    !> variable. Note that the file must have been created or opened for
+    !> parallel IO.
+    integer, optional, intent(in) :: par_access
+
     integer:: status
     integer(nf_kind) :: var_id
 
     status = nf90_inq_varid(parent_id, name, var_id)
     call neasyf_error(status, ncid=parent_id, var=name, varid=var_id, &
                       message="finding variable")
+
+    if (present(par_access)) then
+       status = nf90_var_par_access(parent_id, var_id, par_access)
+       call neasyf_error(status, parent_id, var=name, varid=var_id, &
+                         message="setting parallel access")
+    end if
 
     status = nf90_get_var(parent_id, var_id, values)
 
