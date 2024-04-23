@@ -678,7 +678,12 @@ contains
     end if
   end subroutine neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$
 
-  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, par_access)
+  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, start &
+#:if RANK > 0
+       , count, stride, map &
+#:endif
+       , par_access &
+    )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
@@ -686,6 +691,12 @@ contains
     character(len=*), intent(in) :: name
     !> Storage for the variable
     type(${TYPE_NAME}$)${dimension(RANK)}$, intent(out) :: values
+    !> These are the same as the standard netCDF arguments
+#:if RANK == 0
+    integer, dimension(:), optional, intent(in) :: start
+#:else
+    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+#:endif
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -704,7 +715,11 @@ contains
                          message="setting parallel access")
     end if
 
-    status = nf90_get_var(parent_id, var_id, values)
+#:if RANK == 0
+    status = nf90_get_var(parent_id, var_id, values, start)
+#:else
+    status = nf90_get_var(parent_id, var_id, values, start, count, stride, map)
+#:endif
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
                       message="reading variable")
