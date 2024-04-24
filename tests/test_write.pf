@@ -113,7 +113,7 @@ contains
     integer :: i
     real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
     real, dimension(nx, nt) :: expected_data
-    integer :: x_dim_id, y_dim_id, var_id
+    integer :: x_dim_id, var_id
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
     call neasyf_dim(file_id, "t", unlimited=.true.)
@@ -195,7 +195,7 @@ contains
     real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
     real, dimension(nx, nt) :: expected_data
     integer, parameter :: expected_deflate_level = 1
-    integer :: x_dim_id, y_dim_id, var_id, deflate_level
+    integer :: x_dim_id, var_id, deflate_level
     logical :: shuffle
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
@@ -226,7 +226,7 @@ contains
     real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
     real, dimension(nx, nt) :: expected_data
     integer, parameter :: expected_deflate_level = 1
-    integer :: x_dim_id, y_dim_id, var_id, deflate_level
+    integer :: x_dim_id, var_id, deflate_level
     logical :: shuffle
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
