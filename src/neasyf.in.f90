@@ -536,9 +536,9 @@ contains
 #:for TYPE_NAME in TYPE_NAMES
 #:  for RANK in RANKS
   subroutine neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
 #:if RANK > 0
-       , count, stride, map, compression &
+       , stride, map, compression &
 #:endif
        , par_access &
        )
@@ -565,10 +565,9 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-#:if RANK == 0
-    integer, dimension(:), optional, intent(in) :: start
-#:else
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+#:if RANK > 0
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -673,21 +672,25 @@ contains
        end if
     end if
 
+    if (present(varid)) then
+      varid = var_id
+    end if
+
 #:if RANK == 0
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_put_var(parent_id, var_id, values, start)
 #:else
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
 #:endif
     call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
 
-    if (present(varid)) then
-      varid = var_id
-    end if
   end subroutine neasyf_write_${clean(TYPE_NAME)}$_rank_${RANK}$
 
-  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, start &
+  subroutine neasyf_read_${clean(TYPE_NAME)}$_rank_${RANK}$(parent_id, name, values, start, count &
 #:if RANK > 0
-       , count, stride, map &
+       , stride, map &
 #:endif
        , par_access &
     )
@@ -699,10 +702,9 @@ contains
     !> Storage for the variable
     type(${TYPE_NAME}$)${dimension(RANK)}$, intent(out) :: values
     !> These are the same as the standard netCDF arguments
-#:if RANK == 0
-    integer, dimension(:), optional, intent(in) :: start
-#:else
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+#:if RANK > 0
+    integer, dimension(:), optional, intent(in) :: stride, map
 #:endif
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
@@ -723,6 +725,9 @@ contains
     end if
 
 #:if RANK == 0
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 #:else
     status = nf90_get_var(parent_id, var_id, values, start, count, stride, map)

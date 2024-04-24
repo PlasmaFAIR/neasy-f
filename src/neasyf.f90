@@ -1115,7 +1115,7 @@ contains
 
 
   subroutine neasyf_write_integer_int8_rank_0(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -1139,7 +1139,7 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1212,15 +1212,19 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_0
 
-  subroutine neasyf_read_integer_int8_rank_0(parent_id, name, values, start &
+  subroutine neasyf_read_integer_int8_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -1231,7 +1235,7 @@ contains
     !> Storage for the variable
     type(integer(int8)), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1250,6 +1254,9 @@ contains
                          message="setting parallel access")
     end if
 
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
@@ -1257,8 +1264,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_0
 
   subroutine neasyf_write_integer_int8_rank_1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -1282,7 +1289,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -1359,16 +1367,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_1
 
-  subroutine neasyf_read_integer_int8_rank_1(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_1(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -1379,7 +1388,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1405,8 +1415,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_1
 
   subroutine neasyf_write_integer_int8_rank_2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -1430,7 +1440,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -1507,16 +1518,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_2
 
-  subroutine neasyf_read_integer_int8_rank_2(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_2(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -1527,7 +1539,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1553,8 +1566,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_2
 
   subroutine neasyf_write_integer_int8_rank_3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -1578,7 +1591,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -1655,16 +1669,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_3
 
-  subroutine neasyf_read_integer_int8_rank_3(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_3(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -1675,7 +1690,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1701,8 +1717,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_3
 
   subroutine neasyf_write_integer_int8_rank_4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -1726,7 +1742,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -1803,16 +1820,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_4
 
-  subroutine neasyf_read_integer_int8_rank_4(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_4(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -1823,7 +1841,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1849,8 +1868,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_4
 
   subroutine neasyf_write_integer_int8_rank_5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -1874,7 +1893,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -1951,16 +1971,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_5
 
-  subroutine neasyf_read_integer_int8_rank_5(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_5(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -1971,7 +1992,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -1997,8 +2019,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_5
 
   subroutine neasyf_write_integer_int8_rank_6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2022,7 +2044,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -2099,16 +2122,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_6
 
-  subroutine neasyf_read_integer_int8_rank_6(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_6(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -2119,7 +2143,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2145,8 +2170,8 @@ contains
   end subroutine neasyf_read_integer_int8_rank_6
 
   subroutine neasyf_write_integer_int8_rank_7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2170,7 +2195,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -2247,16 +2273,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int8_rank_7
 
-  subroutine neasyf_read_integer_int8_rank_7(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int8_rank_7(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -2267,7 +2294,8 @@ contains
     !> Storage for the variable
     type(integer(int8)), dimension(:, :, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2293,7 +2321,7 @@ contains
   end subroutine neasyf_read_integer_int8_rank_7
 
   subroutine neasyf_write_integer_int16_rank_0(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2317,7 +2345,7 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2390,15 +2418,19 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_0
 
-  subroutine neasyf_read_integer_int16_rank_0(parent_id, name, values, start &
+  subroutine neasyf_read_integer_int16_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -2409,7 +2441,7 @@ contains
     !> Storage for the variable
     type(integer(int16)), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2428,6 +2460,9 @@ contains
                          message="setting parallel access")
     end if
 
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
@@ -2435,8 +2470,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_0
 
   subroutine neasyf_write_integer_int16_rank_1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2460,7 +2495,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -2537,16 +2573,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_1
 
-  subroutine neasyf_read_integer_int16_rank_1(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_1(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -2557,7 +2594,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2583,8 +2621,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_1
 
   subroutine neasyf_write_integer_int16_rank_2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2608,7 +2646,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -2685,16 +2724,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_2
 
-  subroutine neasyf_read_integer_int16_rank_2(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_2(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -2705,7 +2745,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2731,8 +2772,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_2
 
   subroutine neasyf_write_integer_int16_rank_3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2756,7 +2797,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -2833,16 +2875,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_3
 
-  subroutine neasyf_read_integer_int16_rank_3(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_3(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -2853,7 +2896,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -2879,8 +2923,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_3
 
   subroutine neasyf_write_integer_int16_rank_4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -2904,7 +2948,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -2981,16 +3026,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_4
 
-  subroutine neasyf_read_integer_int16_rank_4(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_4(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3001,7 +3047,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3027,8 +3074,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_4
 
   subroutine neasyf_write_integer_int16_rank_5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3052,7 +3099,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -3129,16 +3177,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_5
 
-  subroutine neasyf_read_integer_int16_rank_5(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_5(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3149,7 +3198,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3175,8 +3225,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_5
 
   subroutine neasyf_write_integer_int16_rank_6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3200,7 +3250,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -3277,16 +3328,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_6
 
-  subroutine neasyf_read_integer_int16_rank_6(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_6(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3297,7 +3349,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3323,8 +3376,8 @@ contains
   end subroutine neasyf_read_integer_int16_rank_6
 
   subroutine neasyf_write_integer_int16_rank_7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3348,7 +3401,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -3425,16 +3479,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int16_rank_7
 
-  subroutine neasyf_read_integer_int16_rank_7(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int16_rank_7(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3445,7 +3500,8 @@ contains
     !> Storage for the variable
     type(integer(int16)), dimension(:, :, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3471,7 +3527,7 @@ contains
   end subroutine neasyf_read_integer_int16_rank_7
 
   subroutine neasyf_write_integer_int32_rank_0(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3495,7 +3551,7 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3568,15 +3624,19 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_0
 
-  subroutine neasyf_read_integer_int32_rank_0(parent_id, name, values, start &
+  subroutine neasyf_read_integer_int32_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3587,7 +3647,7 @@ contains
     !> Storage for the variable
     type(integer(int32)), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3606,6 +3666,9 @@ contains
                          message="setting parallel access")
     end if
 
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
@@ -3613,8 +3676,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_0
 
   subroutine neasyf_write_integer_int32_rank_1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3638,7 +3701,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -3715,16 +3779,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_1
 
-  subroutine neasyf_read_integer_int32_rank_1(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_1(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3735,7 +3800,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3761,8 +3827,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_1
 
   subroutine neasyf_write_integer_int32_rank_2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3786,7 +3852,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -3863,16 +3930,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_2
 
-  subroutine neasyf_read_integer_int32_rank_2(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_2(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -3883,7 +3951,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -3909,8 +3978,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_2
 
   subroutine neasyf_write_integer_int32_rank_3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -3934,7 +4003,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -4011,16 +4081,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_3
 
-  subroutine neasyf_read_integer_int32_rank_3(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_3(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4031,7 +4102,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4057,8 +4129,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_3
 
   subroutine neasyf_write_integer_int32_rank_4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4082,7 +4154,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -4159,16 +4232,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_4
 
-  subroutine neasyf_read_integer_int32_rank_4(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_4(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4179,7 +4253,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4205,8 +4280,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_4
 
   subroutine neasyf_write_integer_int32_rank_5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4230,7 +4305,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -4307,16 +4383,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_5
 
-  subroutine neasyf_read_integer_int32_rank_5(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_5(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4327,7 +4404,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4353,8 +4431,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_5
 
   subroutine neasyf_write_integer_int32_rank_6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4378,7 +4456,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -4455,16 +4534,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_6
 
-  subroutine neasyf_read_integer_int32_rank_6(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_6(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4475,7 +4555,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4501,8 +4582,8 @@ contains
   end subroutine neasyf_read_integer_int32_rank_6
 
   subroutine neasyf_write_integer_int32_rank_7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4526,7 +4607,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -4603,16 +4685,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_integer_int32_rank_7
 
-  subroutine neasyf_read_integer_int32_rank_7(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_integer_int32_rank_7(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4623,7 +4706,8 @@ contains
     !> Storage for the variable
     type(integer(int32)), dimension(:, :, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4649,7 +4733,7 @@ contains
   end subroutine neasyf_read_integer_int32_rank_7
 
   subroutine neasyf_write_real_real32_rank_0(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4673,7 +4757,7 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4746,15 +4830,19 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_0
 
-  subroutine neasyf_read_real_real32_rank_0(parent_id, name, values, start &
+  subroutine neasyf_read_real_real32_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4765,7 +4853,7 @@ contains
     !> Storage for the variable
     type(real(real32)), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4784,6 +4872,9 @@ contains
                          message="setting parallel access")
     end if
 
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
@@ -4791,8 +4882,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_0
 
   subroutine neasyf_write_real_real32_rank_1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4816,7 +4907,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -4893,16 +4985,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_1
 
-  subroutine neasyf_read_real_real32_rank_1(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_1(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -4913,7 +5006,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -4939,8 +5033,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_1
 
   subroutine neasyf_write_real_real32_rank_2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -4964,7 +5058,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -5041,16 +5136,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_2
 
-  subroutine neasyf_read_real_real32_rank_2(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_2(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5061,7 +5157,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5087,8 +5184,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_2
 
   subroutine neasyf_write_real_real32_rank_3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5112,7 +5209,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -5189,16 +5287,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_3
 
-  subroutine neasyf_read_real_real32_rank_3(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_3(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5209,7 +5308,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5235,8 +5335,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_3
 
   subroutine neasyf_write_real_real32_rank_4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5260,7 +5360,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -5337,16 +5438,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_4
 
-  subroutine neasyf_read_real_real32_rank_4(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_4(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5357,7 +5459,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5383,8 +5486,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_4
 
   subroutine neasyf_write_real_real32_rank_5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5408,7 +5511,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -5485,16 +5589,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_5
 
-  subroutine neasyf_read_real_real32_rank_5(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_5(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5505,7 +5610,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5531,8 +5637,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_5
 
   subroutine neasyf_write_real_real32_rank_6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5556,7 +5662,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -5633,16 +5740,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_6
 
-  subroutine neasyf_read_real_real32_rank_6(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_6(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5653,7 +5761,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5679,8 +5788,8 @@ contains
   end subroutine neasyf_read_real_real32_rank_6
 
   subroutine neasyf_write_real_real32_rank_7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5704,7 +5813,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -5781,16 +5891,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real32_rank_7
 
-  subroutine neasyf_read_real_real32_rank_7(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real32_rank_7(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5801,7 +5912,8 @@ contains
     !> Storage for the variable
     type(real(real32)), dimension(:, :, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5827,7 +5939,7 @@ contains
   end subroutine neasyf_read_real_real32_rank_7
 
   subroutine neasyf_write_real_real64_rank_0(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5851,7 +5963,7 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5924,15 +6036,19 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_0
 
-  subroutine neasyf_read_real_real64_rank_0(parent_id, name, values, start &
+  subroutine neasyf_read_real_real64_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -5943,7 +6059,7 @@ contains
     !> Storage for the variable
     type(real(real64)), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -5962,6 +6078,9 @@ contains
                          message="setting parallel access")
     end if
 
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
@@ -5969,8 +6088,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_0
 
   subroutine neasyf_write_real_real64_rank_1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -5994,7 +6113,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6071,16 +6191,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_1
 
-  subroutine neasyf_read_real_real64_rank_1(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_1(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6091,7 +6212,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -6117,8 +6239,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_1
 
   subroutine neasyf_write_real_real64_rank_2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -6142,7 +6264,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6219,16 +6342,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_2
 
-  subroutine neasyf_read_real_real64_rank_2(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_2(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6239,7 +6363,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -6265,8 +6390,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_2
 
   subroutine neasyf_write_real_real64_rank_3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -6290,7 +6415,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6367,16 +6493,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_3
 
-  subroutine neasyf_read_real_real64_rank_3(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_3(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6387,7 +6514,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -6413,8 +6541,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_3
 
   subroutine neasyf_write_real_real64_rank_4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -6438,7 +6566,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6515,16 +6644,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_4
 
-  subroutine neasyf_read_real_real64_rank_4(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_4(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6535,7 +6665,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -6561,8 +6692,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_4
 
   subroutine neasyf_write_real_real64_rank_5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -6586,7 +6717,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6663,16 +6795,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_5
 
-  subroutine neasyf_read_real_real64_rank_5(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_5(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6683,7 +6816,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -6709,8 +6843,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_5
 
   subroutine neasyf_write_real_real64_rank_6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -6734,7 +6868,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6811,16 +6946,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_6
 
-  subroutine neasyf_read_real_real64_rank_6(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_6(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6831,7 +6967,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -6857,8 +6994,8 @@ contains
   end subroutine neasyf_read_real_real64_rank_6
 
   subroutine neasyf_write_real_real64_rank_7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -6882,7 +7019,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -6959,16 +7097,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_real_real64_rank_7
 
-  subroutine neasyf_read_real_real64_rank_7(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_real_real64_rank_7(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -6979,7 +7118,8 @@ contains
     !> Storage for the variable
     type(real(real64)), dimension(:, :, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7005,7 +7145,7 @@ contains
   end subroutine neasyf_read_real_real64_rank_7
 
   subroutine neasyf_write_character_rank_0(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
+       varid, units, long_name, start, count &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7028,7 +7168,7 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7086,15 +7226,19 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
+    status = nf90_put_var(parent_id, var_id, values, start)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_0
 
-  subroutine neasyf_read_character_rank_0(parent_id, name, values, start &
+  subroutine neasyf_read_character_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7105,7 +7249,7 @@ contains
     !> Storage for the variable
     type(character(len=*)), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start
+    integer, dimension(:), optional, intent(in) :: start, count
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7124,6 +7268,9 @@ contains
                          message="setting parallel access")
     end if
 
+    if (present(count)) then
+      if (product(count) == 0) return
+    end if
     status = nf90_get_var(parent_id, var_id, values, start)
 
     call neasyf_error(status, parent_id, var=name, varid=var_id, &
@@ -7131,8 +7278,8 @@ contains
   end subroutine neasyf_read_character_rank_0
 
   subroutine neasyf_write_character_rank_1(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7156,7 +7303,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -7233,16 +7381,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_1
 
-  subroutine neasyf_read_character_rank_1(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_1(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7253,7 +7402,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7279,8 +7429,8 @@ contains
   end subroutine neasyf_read_character_rank_1
 
   subroutine neasyf_write_character_rank_2(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7304,7 +7454,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -7381,16 +7532,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_2
 
-  subroutine neasyf_read_character_rank_2(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_2(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7401,7 +7553,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7427,8 +7580,8 @@ contains
   end subroutine neasyf_read_character_rank_2
 
   subroutine neasyf_write_character_rank_3(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7452,7 +7605,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -7529,16 +7683,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_3
 
-  subroutine neasyf_read_character_rank_3(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_3(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7549,7 +7704,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7575,8 +7731,8 @@ contains
   end subroutine neasyf_read_character_rank_3
 
   subroutine neasyf_write_character_rank_4(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7600,7 +7756,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -7677,16 +7834,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_4
 
-  subroutine neasyf_read_character_rank_4(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_4(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7697,7 +7855,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7723,8 +7882,8 @@ contains
   end subroutine neasyf_read_character_rank_4
 
   subroutine neasyf_write_character_rank_5(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7748,7 +7907,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -7825,16 +7985,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_5
 
-  subroutine neasyf_read_character_rank_5(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_5(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7845,7 +8006,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -7871,8 +8033,8 @@ contains
   end subroutine neasyf_read_character_rank_5
 
   subroutine neasyf_write_character_rank_6(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -7896,7 +8058,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -7973,16 +8136,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_6
 
-  subroutine neasyf_read_character_rank_6(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_6(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -7993,7 +8157,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
@@ -8019,8 +8184,8 @@ contains
   end subroutine neasyf_read_character_rank_6
 
   subroutine neasyf_write_character_rank_7(parent_id, name, values, dim_ids, dim_names, &
-       varid, units, long_name, start &
-       , count, stride, map, compression &
+       varid, units, long_name, start, count &
+       , stride, map, compression &
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
@@ -8044,7 +8209,8 @@ contains
     !> Long descriptive name
     character(len=*), optional, intent(in) :: long_name
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> If non-zero, use compression.
     !>
     !> Enables the `shuffle` netCDF filter and sets the `deflate_level`
@@ -8121,16 +8287,17 @@ contains
        end if
     end if
 
-    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
-    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
-
     if (present(varid)) then
       varid = var_id
     end if
+
+    status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
+    call neasyf_error(status, parent_id, var=name, varid=var_id, message="writing variable")
+
   end subroutine neasyf_write_character_rank_7
 
-  subroutine neasyf_read_character_rank_7(parent_id, name, values, start &
-       , count, stride, map &
+  subroutine neasyf_read_character_rank_7(parent_id, name, values, start, count &
+       , stride, map &
        , par_access &
     )
     use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
@@ -8141,7 +8308,8 @@ contains
     !> Storage for the variable
     type(character(len=*)), dimension(:, :, :, :, :, :, :), intent(out) :: values
     !> These are the same as the standard netCDF arguments
-    integer, dimension(:), optional, intent(in) :: start, count, stride, map
+    integer, dimension(:), optional, intent(in) :: start, count
+    integer, dimension(:), optional, intent(in) :: stride, map
     !> Set to `nf90_collective` to enable collective operations on this
     !> variable. Note that the file must have been created or opened for
     !> parallel IO.
