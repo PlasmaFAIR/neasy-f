@@ -27,7 +27,7 @@
 !>
 !> ! Writing string scalars will automatically create a corresponding
 !> ! dimension of the correct length as the trimmed string
-!> call neasfy_write(ncid, "scalar_text", "Some text as a variable")
+!> call neasyf_write(ncid, "scalar_text", "Some text as a variable")
 !>
 !> call neasyf_close(ncid)
 !> ```
