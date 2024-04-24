@@ -113,7 +113,7 @@ contains
     integer :: i
     real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
     real, dimension(nx, nt) :: expected_data
-    integer :: x_dim_id, y_dim_id, var_id
+    integer :: x_dim_id, var_id
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
     call neasyf_dim(file_id, "t", unlimited=.true.)
@@ -168,6 +168,25 @@ contains
   end subroutine test_write_1d_dim_names
 
   @test
+  subroutine test_write_1d_serial_with_par_access
+    integer, parameter :: NX = 5
+    real, dimension(NX), parameter :: read_data = [55.5, 44.4, 33.3, 22.2, 11.1]
+    real, dimension(NX) :: expected_data
+    integer :: var_id
+
+    call neasyf_dim(file_id, "x", dim_size=NX)
+    call neasyf_write(file_id, "data", read_data, dim_names=["x"], par_access=1)
+    call neasyf_close(file_id)
+
+    call neasyf_error(nf90_open(temp_file, NF90_NOWRITE, file_id))
+    call neasyf_error(nf90_inq_varid(file_id, "data", var_id))
+    call neasyf_error(nf90_get_var(file_id, var_id, expected_data))
+    call neasyf_close(file_id)
+
+    @assertEqual(expected_data, read_data)
+  end subroutine test_write_1d_serial_with_par_access
+
+  @test
   subroutine test_write_2d_dim_names
     integer, parameter :: nx = 5, ny = 3
     integer :: i
@@ -195,7 +214,7 @@ contains
     real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
     real, dimension(nx, nt) :: expected_data
     integer, parameter :: expected_deflate_level = 1
-    integer :: x_dim_id, y_dim_id, var_id, deflate_level
+    integer :: x_dim_id, var_id, deflate_level
     logical :: shuffle
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
@@ -226,7 +245,7 @@ contains
     real, dimension(nx, nt), parameter :: read_data = reshape([(i, i=1, nx*nt)], shape(read_data))
     real, dimension(nx, nt) :: expected_data
     integer, parameter :: expected_deflate_level = 1
-    integer :: x_dim_id, y_dim_id, var_id, deflate_level
+    integer :: x_dim_id, var_id, deflate_level
     logical :: shuffle
 
     call neasyf_dim(file_id, "x", dim_size=nx, dimid=x_dim_id)
