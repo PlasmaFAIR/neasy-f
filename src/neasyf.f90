@@ -1119,7 +1119,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -1204,8 +1205,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start)
@@ -1258,7 +1262,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -1347,8 +1352,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -1402,7 +1410,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -1491,8 +1500,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -1546,7 +1558,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -1635,8 +1648,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -1690,7 +1706,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -1779,8 +1796,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -1834,7 +1854,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -1923,8 +1944,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -1978,7 +2002,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2067,8 +2092,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -2122,7 +2150,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2211,8 +2240,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -2265,7 +2297,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2350,8 +2383,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start)
@@ -2404,7 +2440,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2493,8 +2530,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -2548,7 +2588,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2637,8 +2678,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -2692,7 +2736,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2781,8 +2826,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -2836,7 +2884,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -2925,8 +2974,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -2980,7 +3032,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3069,8 +3122,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -3124,7 +3180,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3213,8 +3270,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -3268,7 +3328,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3357,8 +3418,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -3411,7 +3475,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3496,8 +3561,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start)
@@ -3550,7 +3618,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3639,8 +3708,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -3694,7 +3766,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3783,8 +3856,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -3838,7 +3914,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -3927,8 +4004,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -3982,7 +4062,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4071,8 +4152,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -4126,7 +4210,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4215,8 +4300,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -4270,7 +4358,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4359,8 +4448,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -4414,7 +4506,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4503,8 +4596,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -4557,7 +4653,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4642,8 +4739,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start)
@@ -4696,7 +4796,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4785,8 +4886,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -4840,7 +4944,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -4929,8 +5034,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -4984,7 +5092,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5073,8 +5182,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -5128,7 +5240,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5217,8 +5330,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -5272,7 +5388,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5361,8 +5478,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -5416,7 +5536,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5505,8 +5626,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -5560,7 +5684,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5649,8 +5774,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -5703,7 +5831,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5788,8 +5917,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start)
@@ -5842,7 +5974,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -5931,8 +6064,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -5986,7 +6122,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -6075,8 +6212,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -6130,7 +6270,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -6219,8 +6360,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -6274,7 +6418,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -6363,8 +6508,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -6418,7 +6566,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -6507,8 +6656,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -6562,7 +6714,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -6651,8 +6804,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -6706,7 +6862,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -6795,8 +6952,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -6849,7 +7009,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     !> Name of the variable
     character(len=*), intent(in) :: name
     !> NetCDF ID of the parent group/file
@@ -6918,8 +7079,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start)
@@ -6972,7 +7136,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7061,8 +7226,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -7116,7 +7284,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7205,8 +7374,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -7260,7 +7432,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7349,8 +7522,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -7404,7 +7580,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7493,8 +7670,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -7548,7 +7728,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7637,8 +7818,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -7692,7 +7876,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7781,8 +7966,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
@@ -7836,7 +8024,8 @@ contains
        , par_access &
        )
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
-         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access
+         NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
+         NF90_ENOPAR, NF90_NOERR
     use netcdf, only : NF90_EDIMMETA
     !> Name of the variable
     character(len=*), intent(in) :: name
@@ -7925,8 +8114,11 @@ contains
 
     if (present(par_access)) then
        status = nf90_var_par_access(parent_id, var_id, par_access)
-       call neasyf_error(status, parent_id, var=name, varid=var_id, &
-                         message="setting parallel access")
+       ! Ignore errors from trying to set access property on non-parallel files
+       if (.not. (status == NF90_NOERR .or. status == NF90_ENOPAR)) then
+          call neasyf_error(status, parent_id, var=name, varid=var_id, &
+               message="setting parallel access")
+       end if
     end if
 
     status = nf90_put_var(parent_id, var_id, values, start, count, stride, map)
