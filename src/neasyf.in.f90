@@ -27,7 +27,7 @@
 !>
 !> ! Writing string scalars will automatically create a corresponding
 !> ! dimension of the correct length as the trimmed string
-!> call neasfy_write(ncid, "scalar_text", "Some text as a variable")
+!> call neasyf_write(ncid, "scalar_text", "Some text as a variable")
 !>
 !> call neasyf_close(ncid)
 !> ```
@@ -545,6 +545,9 @@ contains
     use netcdf, only : nf90_inq_varid, nf90_def_var, nf90_put_var, nf90_put_att, &
          NF90_ENOTVAR, nf90_def_dim, nf90_inq_dimid, nf90_var_par_access, &
          NF90_ENOPAR, NF90_NOERR
+#:if (RANK == 0)
+    use netcdf, only : nf90_enddef, NF90_ENOTINDEFINE
+#:endif
 #:if not (RANK == 0 and TYPE_NAME.startswith("character"))
     use netcdf, only : NF90_EDIMMETA
 #:endif
@@ -677,6 +680,10 @@ contains
     end if
 
 #:if RANK == 0
+    status = nf90_enddef(parent_id)
+    if (.not. (status == NF90_NOERR .or. status == NF90_ENOTINDEFINE)) then
+       call neasyf_error(status, ncid=parent_id, var=name, varid=var_id)
+    end if
     if (present(count)) then
       if (product(count) == 0) return
     end if
