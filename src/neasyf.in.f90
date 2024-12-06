@@ -309,7 +309,7 @@ contains
     type is (character(len=*))
       nf_type = NF90_CHAR
     class default
-      error stop "neasfy_type: Unknown Fortran type, cannot convert to netCDF type. &
+      error stop "neasyf_type: Unknown Fortran type, cannot convert to netCDF type. &
            &Neasy-f cannot handle this Fortran type, please use the standard netCDF API"
     end select
   end function neasyf_type_scalar
