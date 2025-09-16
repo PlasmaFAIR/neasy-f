@@ -701,7 +701,7 @@ contains
 #:endif
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
