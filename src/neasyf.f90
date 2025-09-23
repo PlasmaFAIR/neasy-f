@@ -1232,7 +1232,7 @@ contains
   subroutine neasyf_read_integer_int8_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -1385,7 +1385,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -1536,7 +1536,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -1687,7 +1687,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -1838,7 +1838,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -1989,7 +1989,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -2140,7 +2140,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -2291,7 +2291,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -2443,7 +2443,7 @@ contains
   subroutine neasyf_read_integer_int16_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -2596,7 +2596,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -2747,7 +2747,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -2898,7 +2898,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3049,7 +3049,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3200,7 +3200,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3351,7 +3351,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3502,7 +3502,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3654,7 +3654,7 @@ contains
   subroutine neasyf_read_integer_int32_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3807,7 +3807,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -3958,7 +3958,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -4109,7 +4109,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -4260,7 +4260,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -4411,7 +4411,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -4562,7 +4562,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -4713,7 +4713,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -4865,7 +4865,7 @@ contains
   subroutine neasyf_read_real_real32_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5018,7 +5018,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5169,7 +5169,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5320,7 +5320,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5471,7 +5471,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5622,7 +5622,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5773,7 +5773,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -5924,7 +5924,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6076,7 +6076,7 @@ contains
   subroutine neasyf_read_real_real64_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6229,7 +6229,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6380,7 +6380,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6531,7 +6531,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6682,7 +6682,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6833,7 +6833,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -6984,7 +6984,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -7135,7 +7135,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -7271,7 +7271,7 @@ contains
   subroutine neasyf_read_character_rank_0(parent_id, name, values, start, count &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -7424,7 +7424,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -7575,7 +7575,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -7726,7 +7726,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -7877,7 +7877,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -8028,7 +8028,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -8179,7 +8179,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
@@ -8330,7 +8330,7 @@ contains
        , stride, map &
        , par_access &
     )
-    use netcdf, only : nf90_inq_varid, nf90_inquire_variable, nf90_get_var, nf90_var_par_access
+    use netcdf, only : nf90_inq_varid, nf90_get_var, nf90_var_par_access
     !> NetCDF ID of the parent file or group
     integer, intent(in) :: parent_id
     !> Name of the variable
