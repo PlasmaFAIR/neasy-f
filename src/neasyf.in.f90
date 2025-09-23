@@ -621,11 +621,11 @@ contains
         end if
 #:  endif
         ! If we've been passed `start`, then we must be writing into
-        ! a 1D array, in which case we need to know the associated
+        ! a array, in which case we need to know the associated
         ! dimension in order to create the variable
         if (.not. (present(dim_ids) .or. present(dim_names))) then
           call neasyf_error(NF90_EDIMMETA, var=name, &
-               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if 1D variable doesn't already exist")
+               message="neasyf_write: one of 'dim_ids' or 'dim_names' must be present if array variable doesn't already exist")
         end if
 
         ! Either use the passed in array of dimension IDs, or look them up from the array of names
